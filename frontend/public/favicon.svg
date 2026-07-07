@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" fill="none">
+  <!-- Drop shadow filter -->
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#FF8FB1" flood-opacity="0.35"/>
+    </filter>
+    <radialGradient id="heartGrad" cx="40%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FF8FB1"/>
+      <stop offset="100%" stop-color="#FF2E63"/>
+    </radialGradient>
+    <radialGradient id="envGrad" cx="50%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFD6E7"/>
+      <stop offset="100%" stop-color="#FFB3CE"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Envelope body — rounded rect -->
+  <rect x="8" y="22" width="84" height="58" rx="9" ry="9"
+    fill="url(#envGrad)" filter="url(#shadow)" stroke="#FF8FB1" stroke-width="1.2"/>
+
+  <!-- Back diagonal folds (V pattern) -->
+  <!-- Left triangle -->
+  <path d="M8 22 L50 58 L8 80" fill="#FFC2D8" opacity="0.55"/>
+  <!-- Right triangle -->
+  <path d="M92 22 L50 58 L92 80" fill="#FFC2D8" opacity="0.55"/>
+  <!-- Bottom triangle -->
+  <path d="M8 80 L50 58 L92 80 L92 80 Q92 80 92 80 L8 80Z" fill="#FFADC6" opacity="0.45"/>
+
+  <!-- Top flap (closed) -->
+  <path d="M8 22 Q8 22 8 22 L50 52 L92 22 Q83 22 50 22 Q17 22 8 22Z"
+    fill="#FFB8D0" stroke="#FF8FB1" stroke-width="0.8" opacity="0.9"/>
+
+  <!-- Envelope border top edge -->
+  <rect x="8" y="22" width="84" height="58" rx="9" ry="9"
+    fill="none" stroke="#FF8FB1" stroke-width="1.4"/>
+
+  <!-- Heart seal at center -->
+  <path d="M50 68
+    C50 68 36 58 36 50
+    C36 44.5 40.5 41 44.5 41
+    C47 41 49 42.5 50 44
+    C51 42.5 53 41 55.5 41
+    C59.5 41 64 44.5 64 50
+    C64 58 50 68 50 68Z"
+    fill="url(#heartGrad)" stroke="white" stroke-width="1.5"/>
+
+  <!-- Heart gloss highlight -->
+  <ellipse cx="44.5" cy="46.5" rx="3.5" ry="2.5" fill="white" opacity="0.45" transform="rotate(-20 44.5 46.5)"/>
+</svg>

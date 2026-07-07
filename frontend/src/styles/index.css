@@ -1,0 +1,212 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Sacramento&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --primary-color: #FF5C93;
+    --secondary-color: #FF8FB1;
+    --accent-color: #FF4D88;
+    --background-color: #FFF4F8;
+    --gradient-background: linear-gradient(135deg, #FFF4F8 0%, #FFEAF3 50%, #FFD6E7 100%);
+    --text-color: #5C3A47;
+    --handwriting-font: 'Dancing Script', cursive;
+    --glass-blur: 20px;
+    --border-radius: 24px;
+    --animation-speed: 1s;
+    --shadow-color: rgba(255, 92, 147, 0.08);
+  }
+
+  body {
+    background: var(--gradient-background);
+    color: var(--text-color);
+    font-family: 'Nunito', sans-serif;
+    overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 234, 243, 0.5);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary-color);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+  }
+}
+
+@layer components {
+  /* Pastel Light Glass Cards */
+  .glassmorphism {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 10px 30px 0 var(--shadow-color);
+    color: var(--text-color);
+  }
+
+  .glassmorphism-dark {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 10px 30px 0 rgba(255, 92, 147, 0.12);
+    color: var(--text-color);
+  }
+
+  .glassmorphism-light {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    box-shadow: 0 10px 30px 0 rgba(255, 92, 147, 0.06);
+    color: var(--text-color);
+  }
+
+  .glow-border {
+    position: relative;
+    border-radius: var(--border-radius);
+  }
+
+  .glow-border::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: calc(var(--border-radius) + 1px);
+    padding: 1px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
+    -webkit-mask: 
+       linear-gradient(#fff 0 0) content-box, 
+       linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+            mask-composite: exclude;
+    pointer-events: none;
+    opacity: 0.3;
+    transition: opacity 0.3s;
+  }
+
+  .glow-border:hover::after {
+    opacity: 0.8;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px rgba(255, 92, 147, 0.2), 0 0 20px rgba(255, 92, 147, 0.1);
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 10px rgba(255, 143, 177, 0.2);
+  }
+  
+  .font-handwriting {
+    font-family: var(--handwriting-font), cursive;
+  }
+}
+
+/* Custom styles for components */
+.swiper {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 300px;
+  height: 400px;
+}
+
+/* Leaflet Custom Style */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #FFF4F8 !important;
+}
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px);
+  color: var(--text-color) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+}
+
+.leaflet-bar {
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+}
+
+.leaflet-bar a {
+  background: transparent !important;
+  color: var(--text-color) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+.leaflet-bar a:hover {
+  background: var(--primary-color) !important;
+  color: white !important;
+}
+
+/* Custom Cursor Heart */
+.cursor-heart {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  width: 16px;
+  height: 16px;
+  font-size: 16px;
+  transform: translate(-50%, -50%);
+  animation: cursorHeartAnim 0.8s ease-out forwards;
+}
+
+@keyframes cursorHeartAnim {
+  0% {
+    transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -150%) scale(0.2) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* Heart beat animation for Secret Page */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.18); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.12); }
+  70% { transform: scale(1); }
+}
+
+.animate-beat {
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+
+/* Shake animation for wrong passcode */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  15%, 45%, 75% { transform: translateX(-8px); }
+  30%, 60%, 90% { transform: translateX(8px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Float animation for candles */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
