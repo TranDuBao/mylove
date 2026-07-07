@@ -10,7 +10,14 @@ const ContentSchema = new mongoose.Schema(
     birthdayMusicUrl: { type: String, default: '' },
     birthdayMusicPublicId: { type: String, default: '' },
     giftBoxMessage: { type: String, default: 'Surprise! Here is a little virtual token of my appreciation. You deserve all the happiness in the world! 🎁💖' },
-    cakeMessage: { type: String, default: 'Make a wish! Blow out the candles and see what happens...' }
+    cakeMessage: { type: String, default: 'Make a wish! Blow out the candles and see what happens...' },
+    birthdayGallery: [
+      {
+        url: { type: String, required: true },
+        publicId: { type: String, default: '' },
+        caption: { type: String, default: '' }
+      }
+    ]
   },
   { timestamps: true }
 );
