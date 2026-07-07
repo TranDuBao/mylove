@@ -36,6 +36,10 @@ interface FlyingPhoto {
 const getUrl = (url: string) => {
   if (!url) return '';
   if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  // If it's a frontend static asset (starts with 'images/'), return it directly relative to root
+  if (url.startsWith('images/') || url.startsWith('/images/')) {
+    return url.startsWith('/') ? url : `/${url}`;
+  }
   const baseUrl = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
   return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
 };
