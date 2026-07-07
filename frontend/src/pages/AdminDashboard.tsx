@@ -4,7 +4,7 @@ import { api } from '../utils/api.js';
 import type { Photo, TimelineEvent, Letter, Song, Video, MapMarker, AdminStats } from '../types/index.js';
 import { 
   LayoutDashboard, Image as ImageIcon, Calendar, BookOpen, Music, MapPin, 
-  Paintbrush, Settings as SettingsIcon, LogOut, Loader2, ArrowUp, ArrowDown, Plus, Trash2, Edit3, Heart, Save, Eye, Info, Lock
+  Paintbrush, Settings as SettingsIcon, LogOut, Loader2, ArrowUp, ArrowDown, Plus, Trash2, Edit3, Heart, Save, Eye, Info, Lock, RefreshCw
 } from 'lucide-react';
 
 // ── QR Code Generator Tab ──
@@ -898,6 +898,7 @@ export const AdminDashboard: React.FC = () => {
     fd.append('isSecret', 'false');
     try {
       const res = await api.uploadPhoto(fd);
+      console.log('UPLOAD RES:', res); // Log to trace shape of API upload response
       const newItem = { url: res.url || res.photo?.url || '', publicId: res.publicId || res.photo?.publicId || '', caption: bdayGalleryCaption };
       setEditContent((prev: any) => ({
         ...prev,
@@ -1028,9 +1029,30 @@ export const AdminDashboard: React.FC = () => {
       {/* Sidebar Tabs panel */}
       <div className="w-full md:w-64 flex-shrink-0 flex flex-col gap-2">
         <div className="glassmorphism p-4 rounded-xl flex flex-col gap-1 w-full border-b border-white/10 md:border-b-0">
-          <div className="flex items-center gap-2 px-3 py-2 border-b border-primary/10 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-text font-bold text-sm">Admin CMS</span>
+          <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-primary/10 mb-2">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-text font-bold text-sm">Admin CMS</span>
+            </div>
+            <button
+              onClick={async () => {
+                setIsLoadingStats(true);
+                try {
+                  await refreshData();
+                  await loadStats();
+                  await loadAllContent();
+                  showAlert('Đã đồng bộ dữ liệu mới nhất từ Database! 🔄');
+                } catch (err: any) {
+                  showAlert('Đồng bộ thất bại.', 'error');
+                } finally {
+                  setIsLoadingStats(false);
+                }
+              }}
+              title="Đồng bộ lại dữ liệu / Reload Data"
+              className="text-text/60 hover:text-primary transition-colors cursor-pointer"
+            >
+              <RefreshCw size={14} className={isLoadingStats ? "animate-spin" : ""} />
+            </button>
           </div>
 
           {[
