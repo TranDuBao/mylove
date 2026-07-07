@@ -13,6 +13,8 @@ import 'swiper/css/effect-coverflow';
 import 'swiper/css/pagination';
 import 'react-photo-view/dist/react-photo-view.css';
 
+import { motion } from 'framer-motion';
+
 export const GalleryCarousel: React.FC = () => {
   const { theme } = useThemeContext();
   const [photos, setPhotos] = useState<Photo[]>([]);
@@ -51,7 +53,10 @@ export const GalleryCarousel: React.FC = () => {
 
   // Helper to format local URLs
   const getFullUrl = (url: string) => {
-    return url.startsWith('/') ? `http://localhost:5000${url}` : url;
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const baseUrl = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   if (photos.length === 0) {
@@ -162,10 +167,28 @@ export const GalleryCarousel: React.FC = () => {
 
         {/* Gallery Grid */}
         <PhotoProvider>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {filteredPhotos.map((photo) => (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {filteredPhotos.map((photo, index) => (
               <PhotoView key={photo._id} src={getFullUrl(photo.url)}>
-                <div className="glassmorphism rounded-xl overflow-hidden cursor-zoom-in relative group aspect-square hover:scale-[1.02] transition-transform duration-300">
+                <motion.div 
+                  className="glassmorphism rounded-xl overflow-hidden cursor-zoom-in relative group aspect-square hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)]"
+                  // Staggered floating up and down animation
+                  animate={{
+                    y: [0, -10, 0],
+                  }}
+                  transition={{
+                    duration: 4.5 + (index % 3) * 1.5, // Differing float speeds (4.5s, 6s, 7.5s)
+                    repeat: Infinity,
+                    ease: "easeInOut",
+                    delay: (index % 4) * 0.4, // Staggered start times
+                  }}
+                  whileHover={{ 
+                    scale: 1.05, 
+                    rotate: index % 2 === 0 ? 1.5 : -1.5,
+                    zIndex: 10,
+                    transition: { duration: 0.3 }
+                  }}
+                >
                   <img
                     src={getFullUrl(photo.url)}
                     alt={photo.description}
@@ -182,7 +205,7 @@ export const GalleryCarousel: React.FC = () => {
                     <span className="text-[10px] uppercase font-bold text-secondary">{photo.category}</span>
                     <p className="text-white text-xs mt-0.5 truncate">{photo.description || 'No description'}</p>
                   </div>
-                </div>
+                </motion.div>
               </PhotoView>
             ))}
           </div>
