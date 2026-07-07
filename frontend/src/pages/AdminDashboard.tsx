@@ -9,7 +9,7 @@ import {
 
 // ── QR Code Generator Tab ──
 const QrCodeTab: React.FC<{ showAlert: (msg: string, type?: 'success'|'error'|'info') => void }> = ({ showAlert }) => {
-  const [qrUrl, setQrUrl] = useState(window.location.origin);
+  const [qrUrl, setQrUrl] = useState(`${window.location.origin}/#/`);
   const [qrSize, setQrSize] = useState(300);
   const [qrFg, setQrFg] = useState('#c0396b');
   const [qrBg, setQrBg] = useState('#ffffff');
@@ -54,15 +54,15 @@ const QrCodeTab: React.FC<{ showAlert: (msg: string, type?: 'success'|'error'|'i
               className="w-full px-3 py-2 rounded-lg bg-white border border-primary/20 focus:border-primary text-text text-sm outline-none font-mono"
             />
             <div className="flex gap-2 flex-wrap">
-              <button type="button" onClick={() => setQrUrl(window.location.origin)}
+              <button type="button" onClick={() => setQrUrl(`${window.location.origin}/#/`)}
                 className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold hover:bg-primary/20 transition-colors cursor-pointer">
                 🏠 Trang chủ
               </button>
-              <button type="button" onClick={() => setQrUrl(`${window.location.origin}/secret`)}
+              <button type="button" onClick={() => setQrUrl(`${window.location.origin}/#/secret`)}
                 className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold hover:bg-primary/20 transition-colors cursor-pointer">
                 🔒 Archive bí mật
               </button>
-              <button type="button" onClick={() => setQrUrl(window.location.href)}
+              <button type="button" onClick={() => setQrUrl(window.location.origin + '/#/')}
                 className="px-3 py-1 bg-primary/10 text-primary rounded-full text-xs font-semibold hover:bg-primary/20 transition-colors cursor-pointer">
                 📍 Trang hiện tại
               </button>
