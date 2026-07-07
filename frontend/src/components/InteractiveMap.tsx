@@ -52,6 +52,13 @@ export const InteractiveMap: React.FC = () => {
 
   const heartIcon = useMemo(() => createHeartIcon(theme?.primaryColor || '#FF7597'), [theme]);
 
+  const getFullUrl = (url: string) => {
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const baseUrl = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
+  };
+
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4 w-full">
       <h2 className="text-text text-2xl md:text-4xl font-bold tracking-wide text-glow mb-2 uppercase text-center">
@@ -70,10 +77,10 @@ export const InteractiveMap: React.FC = () => {
             scrollWheelZoom={false}
             className="w-full h-full"
           >
-            {/* Dark themed map tiles matching the premium aesthetic */}
+            {/* Bright, premium voyager themed map tiles matching the sweet theme */}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             />
 
             {markers.map((marker) => (
@@ -87,22 +94,22 @@ export const InteractiveMap: React.FC = () => {
                     {/* Popup Photo */}
                     {marker.photoUrl && (
                       <img 
-                        src={marker.photoUrl.startsWith('/') ? `http://localhost:5000${marker.photoUrl}` : marker.photoUrl} 
+                        src={getFullUrl(marker.photoUrl)} 
                         alt={marker.title} 
                         className="w-full h-24 object-cover rounded-md mb-2 shadow"
                       />
                     )}
-                    <h4 className="text-white font-bold text-sm flex items-center gap-1">
-                      <Heart size={12} className="text-primary fill-primary" />
+                    <h4 className="text-gray-800 font-bold text-sm flex items-center gap-1">
+                      <Heart size={12} className="text-rose-500 fill-rose-500" />
                       {marker.title}
                     </h4>
                     {marker.date && (
-                      <span className="text-[10px] text-secondary flex items-center gap-1 mt-0.5">
+                      <span className="text-[10px] text-rose-500 font-semibold flex items-center gap-1 mt-0.5">
                         <Calendar size={10} />
                         {marker.date}
                       </span>
                     )}
-                    <p className="text-xs text-white/80 mt-1 leading-normal border-t border-white/10 pt-1.5 font-light">
+                    <p className="text-xs text-gray-600 font-normal mt-1 leading-normal border-t border-gray-200/60 pt-1.5">
                       {marker.description}
                     </p>
                   </div>
