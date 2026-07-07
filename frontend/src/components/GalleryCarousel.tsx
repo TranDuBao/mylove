@@ -631,6 +631,18 @@ const CustomLightbox: React.FC<LightboxProps> = ({
   );
 };
 
+const getMilestoneIcon = (title: string) => {
+  const t = title.toLowerCase();
+  if (t.includes('gặp') || t.includes('meet') || t.includes('thấy') || t.includes('quen')) return '🌸';
+  if (t.includes('date') || t.includes('hẹn') || t.includes('yêu') || t.includes('tỏ tình')) return '☕';
+  if (t.includes('sinh nhật') || t.includes('birthday') || t.includes('tuổi')) return '🎂';
+  if (t.includes('noel') || t.includes('giáng sinh') || t.includes('christmas')) return '🎄';
+  if (t.includes('năm mới') || t.includes('tết') || t.includes('new year')) return '🎆';
+  if (t.includes('chơi') || t.includes('du lịch') || t.includes('trip') || t.includes('bay')) return '✈️';
+  if (t.includes('phim') || t.includes('movie')) return '🎬';
+  return '💖'; // Default sweet heart
+};
+
 // --- PRIMARY COMPONENT WITH CURSOR GLOW AND HEART TRAIL ---
 export const GalleryCarousel: React.FC = () => {
   const { theme } = useThemeContext();
@@ -695,34 +707,34 @@ export const GalleryCarousel: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Milestone Cards Seed Data
-  const milestones = useMemo(() => [
-    { title: 'Our First Meeting 🌸', icon: '🌸', date: '2023-05-20', desc: 'The magical day our paths crossed, and the world became instantly brighter.' },
-    { title: 'Our First Date ❤️', icon: '☕', date: '2023-06-01', desc: 'Sipping sweet coffee together, nervous smiles, and an unforgettable sparks moment.' },
-    { title: 'First Birthday 🎂', icon: '🎂', date: '2023-09-09', desc: 'Celebrating your special day as a couple. Blowing out candles, making sweet wishes.' },
-    { title: 'Christmas Magic 🎄', icon: '🎄', date: '2023-12-25', desc: 'Under the glittering lights, wrapped in warm blankets, sharing romantic gifts.' },
-    { title: 'New Year Wish 🎆', icon: '🎆', date: '2024-01-01', desc: 'Watching fireworks illuminate the sky, making promises to love each other forever.' }
-  ], []);
+  // Timeline events from database state
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([]);
 
-  // Fetch albums data
-  const fetchPhotos = async () => {
+  // Fetch albums and timeline data
+  const fetchData = async () => {
     try {
-      const list = await api.getPhotos();
-      setPhotos(list);
+      // Fetch photos
+      const photoList = await api.getPhotos();
+      setPhotos(photoList);
 
       // Extract unique categories
       const cats = new Set<string>();
-      list.forEach(p => {
+      photoList.forEach(p => {
         if (p.category) cats.add(p.category);
       });
       setCategories(['All', ...Array.from(cats)]);
+
+      // Fetch timeline events
+      const timelineList = await api.getTimelineEvents();
+      const sortedTimeline = timelineList.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      setTimelineEvents(sortedTimeline);
     } catch (e) {
-      console.error('Failed to fetch photos:', e);
+      console.error('Failed to fetch data:', e);
     }
   };
 
   useEffect(() => {
-    fetchPhotos();
+    fetchData();
   }, []);
 
   // Helper to format local URLs
@@ -777,24 +789,24 @@ export const GalleryCarousel: React.FC = () => {
 
   // Insert Milestones into Photo Grid organically (e.g. index % 3 === 0)
   const gridItems = useMemo(() => {
-    const items: Array<{ type: 'photo'; data: Photo } | { type: 'milestone'; data: typeof milestones[0] }> = [];
+    const items: Array<{ type: 'photo'; data: Photo } | { type: 'milestone'; data: TimelineEvent }> = [];
     let milestoneIndex = 0;
     
     filteredPhotos.forEach((photo, idx) => {
       items.push({ type: 'photo', data: photo });
-      if ((idx + 1) % 3 === 0 && milestoneIndex < milestones.length) {
-        items.push({ type: 'milestone', data: milestones[milestoneIndex] });
+      if ((idx + 1) % 3 === 0 && milestoneIndex < timelineEvents.length) {
+        items.push({ type: 'milestone', data: timelineEvents[milestoneIndex] });
         milestoneIndex++;
       }
     });
 
-    while (items.length < 5 && milestoneIndex < milestones.length) {
-      items.push({ type: 'milestone', data: milestones[milestoneIndex] });
+    while (items.length < 5 && milestoneIndex < timelineEvents.length) {
+      items.push({ type: 'milestone', data: timelineEvents[milestoneIndex] });
       milestoneIndex++;
     }
 
     return items;
-  }, [filteredPhotos, milestones]);
+  }, [filteredPhotos, timelineEvents]);
 
   if (photos.length === 0) {
     return (
@@ -916,9 +928,9 @@ export const GalleryCarousel: React.FC = () => {
                   key={`milestone-${index}`}
                   index={index}
                   title={item.data.title}
-                  icon={item.data.icon}
+                  icon={getMilestoneIcon(item.data.title)}
                   date={item.data.date}
-                  desc={item.data.desc}
+                  desc={item.data.description}
                 />
               );
             }
