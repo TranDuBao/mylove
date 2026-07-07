@@ -38,6 +38,7 @@ router.put('/config', protect, async (req, res) => {
     const updated = await dbHelper.updateSettings(req.body);
     return res.json(updated);
   } catch (error) {
+    console.error('Error updating settings config:', error);
     return res.status(500).json({ message: 'Error updating settings' });
   }
 });
@@ -48,6 +49,7 @@ router.put('/theme', protect, async (req, res) => {
     const updated = await dbHelper.updateTheme(req.body);
     return res.json(updated);
   } catch (error) {
+    console.error('Error updating theme builder:', error);
     return res.status(500).json({ message: 'Error updating theme' });
   }
 });
@@ -58,6 +60,7 @@ router.put('/effects', protect, async (req, res) => {
     const updated = await dbHelper.updateEffects(req.body);
     return res.json(updated);
   } catch (error) {
+    console.error('Error updating visual effects toggles:', error);
     return res.status(500).json({ message: 'Error updating visual effects' });
   }
 });
@@ -68,6 +71,7 @@ router.put('/content', protect, async (req, res) => {
     const updated = await dbHelper.updateContent(req.body);
     return res.json(updated);
   } catch (error) {
+    console.error('Error updating core contents:', error);
     return res.status(500).json({ message: 'Error updating core contents' });
   }
 });

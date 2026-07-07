@@ -44,7 +44,8 @@ export const dbHelper = {
     if (global.dbFallback) {
       return jsonDb.updateOne('settings', () => true, data);
     } else {
-      return await Settings.findOneAndUpdate({}, { $set: data }, { new: true, upsert: true });
+      const { _id, createdAt, updatedAt, ...updateData } = data;
+      return await Settings.findOneAndUpdate({}, { $set: updateData }, { new: true, upsert: true });
     }
   },
 
@@ -69,7 +70,8 @@ export const dbHelper = {
     if (global.dbFallback) {
       return jsonDb.updateOne('theme', () => true, data);
     } else {
-      return await Theme.findOneAndUpdate({}, { $set: data }, { new: true, upsert: true });
+      const { _id, createdAt, updatedAt, ...updateData } = data;
+      return await Theme.findOneAndUpdate({}, { $set: updateData }, { new: true, upsert: true });
     }
   },
 
@@ -94,7 +96,8 @@ export const dbHelper = {
     if (global.dbFallback) {
       return jsonDb.updateOne('effects', () => true, data);
     } else {
-      return await Effects.findOneAndUpdate({}, { $set: data }, { new: true, upsert: true });
+      const { _id, createdAt, updatedAt, ...updateData } = data;
+      return await Effects.findOneAndUpdate({}, { $set: updateData }, { new: true, upsert: true });
     }
   },
 
@@ -119,7 +122,8 @@ export const dbHelper = {
     if (global.dbFallback) {
       return jsonDb.updateOne('content', () => true, data);
     } else {
-      return await Content.findOneAndUpdate({}, { $set: data }, { new: true, upsert: true });
+      const { _id, createdAt, updatedAt, ...updateData } = data;
+      return await Content.findOneAndUpdate({}, { $set: updateData }, { new: true, upsert: true });
     }
   },
 
