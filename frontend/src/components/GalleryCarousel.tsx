@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { PhotoProvider } from 'react-photo-view';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { api } from '../utils/api.js';
 import type { Photo } from '../types/index.js';
 import { 
@@ -41,6 +41,33 @@ const customStyles = `
     background-size: 200% 100%;
     animation: shimmer 1.5s infinite linear;
   }
+
+  /* Sheen sweep animation */
+  @keyframes sweep {
+    0% { left: -100%; }
+    100% { left: 200%; }
+  }
+  .sheen-sweep {
+    position: absolute;
+    top: 0;
+    width: 80%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0) 100%);
+    transform: skewX(-25deg);
+    animation: sweep 2s infinite ease-in-out;
+  }
+
+  /* Aurora Gradient Background */
+  @keyframes aurora {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  .aurora-gallery-bg {
+    background: linear-gradient(-45deg, rgba(252,231,243,0.2) 0%, rgba(253,244,245,0.35) 25%, rgba(232,225,255,0.15) 50%, rgba(252,231,243,0.2) 100%);
+    background-size: 400% 400%;
+    animation: aurora 15s ease infinite;
+  }
 `;
 
 // --- INTERACTIVE AMBIENT CANVAS BACKGROUND ---
@@ -63,21 +90,21 @@ const AmbientCanvas: React.FC = () => {
       y = Math.random() * height - height;
       r = Math.random() * 8 + 4; // size
       d = Math.random() * 40 + 10;
-      speed = Math.random() * 1.2 + 0.6;
+      speed = Math.random() * 1.0 + 0.5;
       angle = Math.random() * 20;
       rotate = Math.random() * 360;
-      rotateSpeed = Math.random() * 1.5 - 0.75;
+      rotateSpeed = Math.random() * 1.0 - 0.5;
 
       update() {
         this.y += this.speed;
-        this.x += Math.sin(this.angle * 0.05) * 0.5;
-        this.angle += 0.5;
+        this.x += Math.sin(this.angle * 0.04) * 0.4;
+        this.angle += 0.3;
         this.rotate += this.rotateSpeed;
 
         if (this.y > height) {
           this.y = -20;
           this.x = Math.random() * width;
-          this.speed = Math.random() * 1.2 + 0.6;
+          this.speed = Math.random() * 1.0 + 0.5;
         }
       }
 
@@ -86,11 +113,10 @@ const AmbientCanvas: React.FC = () => {
         c.translate(this.x, this.y);
         c.rotate((this.rotate * Math.PI) / 180);
         c.beginPath();
-        // Draw elegant petal shape
         c.ellipse(0, 0, this.r, this.r / 1.7, 0, 0, 2 * Math.PI);
-        c.fillStyle = 'rgba(251, 207, 232, 0.45)'; // Soft pink
+        c.fillStyle = 'rgba(251, 107, 182, 0.25)'; // Pink Sakura shade
         c.fill();
-        c.strokeStyle = 'rgba(249, 168, 212, 0.2)';
+        c.strokeStyle = 'rgba(249, 168, 212, 0.1)';
         c.stroke();
         c.restore();
       }
@@ -99,13 +125,13 @@ const AmbientCanvas: React.FC = () => {
     class Bubble {
       x = Math.random() * width;
       y = Math.random() * height + height;
-      r = Math.random() * 15 + 5;
-      speed = Math.random() * 0.5 + 0.25;
-      alpha = Math.random() * 0.3 + 0.15;
+      r = Math.random() * 12 + 4;
+      speed = Math.random() * 0.4 + 0.2;
+      alpha = Math.random() * 0.25 + 0.1;
 
       update() {
         this.y -= this.speed;
-        this.x += Math.sin(this.y * 0.02) * 0.2;
+        this.x += Math.sin(this.y * 0.015) * 0.15;
         if (this.y < -20) {
           this.y = height + 20;
           this.x = Math.random() * width;
@@ -117,7 +143,7 @@ const AmbientCanvas: React.FC = () => {
         c.arc(this.x, this.y, this.r, 0, 2 * Math.PI);
         c.fillStyle = `rgba(252, 231, 243, ${this.alpha})`;
         c.fill();
-        c.strokeStyle = `rgba(251, 207, 232, ${this.alpha * 1.5})`;
+        c.strokeStyle = `rgba(251, 207, 232, ${this.alpha * 1.2})`;
         c.stroke();
       }
     }
@@ -125,23 +151,21 @@ const AmbientCanvas: React.FC = () => {
     class Butterfly {
       x = Math.random() * width;
       y = Math.random() * height;
-      size = Math.random() * 6 + 4;
-      vx = Math.random() * 0.8 - 0.4;
-      vy = Math.random() * 0.6 - 0.3;
+      size = Math.random() * 5 + 3.5;
+      vx = Math.random() * 0.6 - 0.3;
+      vy = Math.random() * 0.4 - 0.2;
       wingPhase = Math.random() * 10;
-      wingSpeed = Math.random() * 0.15 + 0.1;
-      color = ['rgba(249,168,212,0.4)', 'rgba(251,207,232,0.3)', 'rgba(255,182,193,0.35)'][Math.floor(Math.random() * 3)];
+      wingSpeed = Math.random() * 0.12 + 0.08;
+      color = ['rgba(249,168,212,0.3)', 'rgba(251,207,232,0.25)', 'rgba(255,182,193,0.35)'][Math.floor(Math.random() * 3)];
 
       update() {
         this.x += this.vx;
         this.y += this.vy;
         this.wingPhase += this.wingSpeed;
 
-        // Change directions randomly
-        if (Math.random() < 0.01) this.vx = Math.random() * 0.8 - 0.4;
-        if (Math.random() < 0.01) this.vy = Math.random() * 0.6 - 0.3;
+        if (Math.random() < 0.01) this.vx = Math.random() * 0.6 - 0.3;
+        if (Math.random() < 0.01) this.vy = Math.random() * 0.4 - 0.2;
 
-        // Wrap around bounds
         if (this.x < -20) this.x = width + 20;
         if (this.x > width + 20) this.x = -20;
         if (this.y < -20) this.y = height + 20;
@@ -154,20 +178,17 @@ const AmbientCanvas: React.FC = () => {
         const wingScale = Math.sin(this.wingPhase);
 
         c.beginPath();
-        // Left Wing
         c.ellipse(-this.size, 0, this.size, this.size * 1.5 * Math.abs(wingScale), Math.PI / 4, 0, 2 * Math.PI);
-        // Right Wing
         c.ellipse(this.size, 0, this.size, this.size * 1.5 * Math.abs(wingScale), -Math.PI / 4, 0, 2 * Math.PI);
-        
         c.fillStyle = this.color;
         c.fill();
         c.restore();
       }
     }
 
-    const petals: SakuraPetal[] = Array.from({ length: 25 }, () => new SakuraPetal());
-    const bubbles: Bubble[] = Array.from({ length: 15 }, () => new Bubble());
-    const butterflies: Butterfly[] = Array.from({ length: 6 }, () => new Butterfly());
+    const petals: SakuraPetal[] = Array.from({ length: 20 }, () => new SakuraPetal());
+    const bubbles: Bubble[] = Array.from({ length: 12 }, () => new Bubble());
+    const butterflies: Butterfly[] = Array.from({ length: 4 }, () => new Butterfly());
 
     const handleResize = () => {
       if (!canvas) return;
@@ -179,7 +200,6 @@ const AmbientCanvas: React.FC = () => {
     const loop = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Render backgrounds
       bubbles.forEach((b) => {
         b.update();
         b.draw(ctx);
@@ -221,6 +241,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
 }) => {
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isLoaded, setIsLoaded] = useState(false);
+  const [ripples, setRipples] = useState<Array<{ id: number; x: number; y: number }>>([]);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -240,12 +261,29 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
     setTilt({ x: 0, y: 0 });
   };
 
+  // Clicking Ripple Trigger
+  const handleCardClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = cardRef.current;
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const newRipple = { id: Date.now(), x, y };
+    setRipples(prev => [...prev, newRipple]);
+    setTimeout(() => {
+      setRipples(prev => prev.filter(r => r.id !== newRipple.id));
+    }, 600);
+
+    onCardClick();
+  };
+
   return (
     <motion.div
       ref={cardRef}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      onClick={onCardClick}
+      onClick={handleCardClick}
       className="relative rounded-[22px] overflow-hidden glassmorphism border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.06)] cursor-zoom-in group select-none aspect-square"
       style={{
         transformStyle: 'preserve-3d',
@@ -267,14 +305,28 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
         rotateY: { type: 'spring', stiffness: 300, damping: 20 },
       }}
       whileHover={{
-        scale: 1.03,
-        boxShadow: '0 20px 40px rgba(255, 117, 151, 0.15)',
-        borderColor: 'rgba(255, 117, 151, 0.4)',
+        scale: 1.04,
+        boxShadow: '0 20px 40px rgba(255, 117, 151, 0.2)',
+        borderColor: 'rgba(255, 117, 151, 0.45)',
         zIndex: 10,
       }}
     >
       {/* Animated pink light sheen sweep effect on hover */}
-      <div className="absolute inset-0 w-[200%] h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:animate-[sweep_1.5s_ease-in-out_infinite] pointer-events-none z-10" />
+      <div className="sheen-sweep opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+
+      {/* Clicking ripples */}
+      {ripples.map((ripple) => (
+        <span
+          key={ripple.id}
+          className="absolute rounded-full bg-white/30 pointer-events-none animate-ping z-20"
+          style={{
+            left: ripple.x - 20,
+            top: ripple.y - 20,
+            width: 40,
+            height: 40,
+          }}
+        />
+      ))}
 
       {/* Shimmer Image Placeholder */}
       {!isLoaded && <div className="absolute inset-0 w-full h-full shimmer-placeholder" />}
@@ -284,7 +336,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
         src={getFullUrl(photo.url)}
         alt={photo.description}
         onLoad={() => setIsLoaded(true)}
-        className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
+        className={`w-full h-full object-cover transition-all duration-750 ease-out group-hover:scale-[1.06] ${
           isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'
         }`}
         loading="lazy"
@@ -301,11 +353,11 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
       )}
 
       {/* IMMERSIVE HOVER OVERLAY DISPLAY */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5 select-none z-10">
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-350 flex flex-col justify-end p-5 select-none z-10">
         
         {/* Category Pill Tag */}
         <div className="mb-2">
-          <span className="px-2.5 py-1 bg-primary/20 text-primary border border-primary/25 rounded-full text-[10px] uppercase font-bold tracking-widest backdrop-blur-sm">
+          <span className="px-2.5 py-1 bg-primary/25 text-primary border border-primary/30 rounded-full text-[10px] uppercase font-bold tracking-widest backdrop-blur-sm">
             {photo.category || 'General'}
           </span>
         </div>
@@ -367,8 +419,8 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
       }}
       whileHover={{
         scale: 1.03,
-        boxShadow: '0 15px 30px rgba(249, 168, 212, 0.1)',
-        borderColor: 'rgba(249, 168, 212, 0.3)'
+        boxShadow: '0 15px 30px rgba(249, 168, 212, 0.15)',
+        borderColor: 'rgba(249, 168, 212, 0.35)'
       }}
     >
       {/* Background Soft Glow Circular blobs */}
@@ -427,7 +479,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
   const touchStartX = useRef(0);
 
   useEffect(() => {
-    // Keyboard navigation listeners
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (e.key === 'ArrowLeft') { onPrev(); setZoomScale(1); }
@@ -437,7 +488,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose, onPrev, onNext]);
 
-  // Touch Swipe gestures for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartX.current = e.touches[0].clientX;
   };
@@ -454,7 +504,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
     }
   };
 
-  // Download Image Helper
   const handleDownload = async () => {
     try {
       const src = getFullUrl(photo.url);
@@ -470,7 +519,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
     }
   };
 
-  // Share link helper
   const handleShare = () => {
     const shareUrl = getFullUrl(photo.url);
     navigator.clipboard.writeText(shareUrl);
@@ -489,38 +537,38 @@ const CustomLightbox: React.FC<LightboxProps> = ({
     >
       {/* 1. Header Toolbar */}
       <div className="w-full flex justify-between items-center z-55 max-w-7xl">
-        {/* Photo Counter */}
         <div className="text-white/60 text-xs font-mono">
           {currentIndex + 1} / {photos.length}
         </div>
-        {/* Operations */}
-        <div className="flex items-center gap-3">
+        {/* Floating Glass Toolbar */}
+        <div className="flex items-center gap-3 bg-white/10 border border-white/20 backdrop-blur-md px-4 py-2 rounded-full shadow-2xl">
           <button 
             onClick={handleDownload}
-            className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors cursor-pointer"
+            className="p-2 text-white hover:text-primary transition-colors cursor-pointer"
             title="Download Photo"
           >
             <Download size={16} />
           </button>
           <button 
             onClick={handleShare}
-            className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors cursor-pointer"
+            className="p-2 text-white hover:text-primary transition-colors cursor-pointer"
             title="Copy Share Link"
           >
             <Share2 size={16} />
           </button>
           <button
             onClick={(e) => onFavoriteToggle(e, photo._id, photo.isFavorite)}
-            className={`p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors cursor-pointer ${
+            className={`p-2 text-white hover:text-rose-500 transition-colors cursor-pointer ${
               photo.isFavorite ? 'text-rose-500' : ''
             }`}
             title="Toggle Favorite"
           >
             <Heart size={16} className={photo.isFavorite ? 'fill-rose-500' : ''} />
           </button>
+          <div className="w-[1px] h-4 bg-white/20 mx-1" />
           <button 
             onClick={onClose}
-            className="p-2.5 bg-primary/20 hover:bg-primary/40 text-primary hover:text-white rounded-full transition-colors cursor-pointer ml-3"
+            className="p-2 text-white/80 hover:text-white transition-colors cursor-pointer"
             title="Close Lightbox"
           >
             <X size={16} />
@@ -534,7 +582,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Left Arrow Button */}
         <button 
           onClick={() => { onPrev(); setZoomScale(1); }}
           className="absolute left-0 md:-left-16 z-55 p-3.5 bg-white/5 hover:bg-white/15 text-white/80 rounded-full transition-all border border-white/5 cursor-pointer hidden sm:flex"
@@ -542,7 +589,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
           <ChevronLeft size={20} />
         </button>
 
-        {/* Center Display Image */}
         <div className="w-full h-[65vh] flex items-center justify-center overflow-hidden relative">
           <motion.img
             key={photo._id}
@@ -557,7 +603,6 @@ const CustomLightbox: React.FC<LightboxProps> = ({
           />
         </div>
 
-        {/* Right Arrow Button */}
         <button 
           onClick={() => { onNext(); setZoomScale(1); }}
           className="absolute right-0 md:-right-16 z-55 p-3.5 bg-white/5 hover:bg-white/15 text-white/80 rounded-full transition-all border border-white/5 cursor-pointer hidden sm:flex"
@@ -586,9 +631,10 @@ const CustomLightbox: React.FC<LightboxProps> = ({
   );
 };
 
-// --- PRIMARY COMPONENT ---
+// --- PRIMARY COMPONENT WITH CURSOR GLOW AND HEART TRAIL ---
 export const GalleryCarousel: React.FC = () => {
   const { theme } = useThemeContext();
+  const containerRef = useRef<HTMLDivElement | null>(null);
   
   // Custom alerts configuration
   const [alert, setAlert] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
@@ -603,6 +649,51 @@ export const GalleryCarousel: React.FC = () => {
   const [activeCategory, setActiveCategory] = useState('All');
   const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Mouse Glow & Trail Hearts state
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
+  const [trailHearts, setTrailHearts] = useState<Array<{ id: number; x: number; y: number; size: number; rot: number }>>([]);
+  const lastTrailTime = useRef(0);
+
+  // Parallax Scroll logic
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
+  const titleY = useTransform(scrollYProgress, [0, 1], ["0px", "-40px"]);
+
+  // Mouse move inside gallery container
+  const handleContainerMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    // Smooth cursor follow
+    setCursorPos({ x: e.clientX, y: e.clientY });
+
+    // Spawn trailing heart particles (throttled to once every 80ms)
+    const now = Date.now();
+    if (now - lastTrailTime.current > 80) {
+      const newHeart = {
+        id: now,
+        x: x + (Math.random() * 16 - 8),
+        y: y + (Math.random() * 16 - 8),
+        size: Math.random() * 12 + 6,
+        rot: Math.random() * 45 - 22.5
+      };
+      setTrailHearts(prev => [...prev.slice(-15), newHeart]); // Keep last 15 hearts
+      lastTrailTime.current = now;
+    }
+  };
+
+  // Periodically decay trail hearts
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTrailHearts(prev => prev.filter(h => Date.now() - h.id < 800));
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   // Milestone Cards Seed Data
   const milestones = useMemo(() => [
@@ -644,15 +735,13 @@ export const GalleryCarousel: React.FC = () => {
 
   // Toggle Favorite
   const handleFavoriteToggle = async (e: React.MouseEvent, photoId: string, currentFav: boolean) => {
-    e.stopPropagation(); // Avoid triggering lightbox close/open
+    e.stopPropagation();
     try {
       await api.updatePhoto(photoId, { isFavorite: !currentFav });
       
-      // Update local state to trigger instant UI update
       setPhotos(prev => prev.map(p => p._id === photoId ? { ...p, isFavorite: !currentFav } : p));
       
       if (!currentFav) {
-        // Trigger heart explosion confetti
         canvasConfetti({
           particleCount: 50,
           angle: 60,
@@ -693,14 +782,12 @@ export const GalleryCarousel: React.FC = () => {
     
     filteredPhotos.forEach((photo, idx) => {
       items.push({ type: 'photo', data: photo });
-      // Inject a milestone card every 3 items if we have more remaining
       if ((idx + 1) % 3 === 0 && milestoneIndex < milestones.length) {
         items.push({ type: 'milestone', data: milestones[milestoneIndex] });
         milestoneIndex++;
       }
     });
 
-    // If there are left-over milestones and list is short, append them
     while (items.length < 5 && milestoneIndex < milestones.length) {
       items.push({ type: 'milestone', data: milestones[milestoneIndex] });
       milestoneIndex++;
@@ -724,36 +811,68 @@ export const GalleryCarousel: React.FC = () => {
   }
 
   return (
-    <div className="py-20 px-4 max-w-7xl mx-auto w-full relative min-h-[600px] overflow-hidden custom-scrollbar">
+    <motion.div 
+      ref={containerRef}
+      onMouseMove={handleContainerMouseMove}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.8, ease: "easeOut" }}
+      className="py-20 px-4 max-w-7xl mx-auto w-full relative min-h-[600px] overflow-hidden custom-scrollbar aurora-gallery-bg rounded-[32px] my-10 border border-white/15 shadow-2xl"
+    >
       {/* Inject custom inline styles */}
       <style>{customStyles}</style>
 
       {/* Floating interactive background canvas */}
       <AmbientCanvas />
 
-      {/* Header Info */}
-      <div className="relative z-10 text-center mb-12">
+      {/* Soft Glowing Cursor (Hidden on touch screens) */}
+      <div 
+        className="fixed pointer-events-none w-10 h-10 rounded-full border border-primary/30 bg-primary/5 blur-[2px] z-50 transition-transform duration-100 ease-out hidden lg:block"
+        style={{ left: cursorPos.x - 20, top: cursorPos.y - 20 }}
+      />
+
+      {/* Trailing Heart particles */}
+      {trailHearts.map((heart) => (
+        <motion.div
+          key={heart.id}
+          initial={{ opacity: 0.8, y: heart.y, scale: 1 }}
+          animate={{ opacity: 0, y: heart.y - 60, scale: 0.5 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="absolute text-primary pointer-events-none z-20"
+          style={{
+            left: heart.x - heart.size / 2,
+            fontSize: `${heart.size}px`,
+            transform: `rotate(${heart.rot}deg)`,
+          }}
+        >
+          ❤️
+        </motion.div>
+      ))}
+
+      {/* Header Info (Parallax moving) */}
+      <motion.div style={{ y: titleY }} className="relative z-10 text-center mb-12 select-none">
         <h2 className="text-text text-3xl md:text-5xl font-bold tracking-wide text-glow mb-3 uppercase">
           Our Love Gallery
         </h2>
         <p className="text-primary text-sm md:text-lg font-handwriting text-glow-gold">
           Scroll through the sweet pages of our polaroid book
         </p>
-      </div>
+      </motion.div>
 
       {/* Category Pill Filters Tab & Favorites Checkbox */}
       <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6 mb-12 border-b border-primary/10 pb-6">
         
         {/* Left: glassy pill selection */}
-        <div className="flex gap-3 flex-wrap justify-center">
+        <div className="flex gap-3 flex-wrap justify-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-full border border-white/20 shadow-lg">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${
+              className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 transform hover:scale-105 active:scale-95 cursor-pointer ${
                 activeCategory === cat
-                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-[0_4px_15px_rgba(255,117,151,0.4)] border-none'
-                  : 'bg-white/10 backdrop-blur-md text-text border border-white/20 hover:bg-white/20'
+                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-[0_4px_15px_rgba(255,117,151,0.4)]'
+                  : 'text-text hover:bg-white/20'
               }`}
             >
               {cat}
@@ -850,7 +969,7 @@ export const GalleryCarousel: React.FC = () => {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 };
 
