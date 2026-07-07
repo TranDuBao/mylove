@@ -246,7 +246,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
       onClick={onCardClick}
-      className="break-inside-avoid-column mb-6 relative rounded-[22px] overflow-hidden glassmorphism border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.06)] cursor-zoom-in group select-none"
+      className="relative rounded-[22px] overflow-hidden glassmorphism border border-white/20 shadow-[0_8px_30px_rgba(0,0,0,0.06)] cursor-zoom-in group select-none aspect-square"
       style={{
         transformStyle: 'preserve-3d',
         perspective: '1000px',
@@ -284,7 +284,7 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
         src={getFullUrl(photo.url)}
         alt={photo.description}
         onLoad={() => setIsLoaded(true)}
-        className={`w-full h-auto object-cover max-h-[480px] transition-all duration-700 ease-out group-hover:scale-105 ${
+        className={`w-full h-full object-cover transition-all duration-700 ease-out group-hover:scale-105 ${
           isLoaded ? 'opacity-100 blur-0' : 'opacity-0 blur-md'
         }`}
         loading="lazy"
@@ -355,7 +355,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
 }) => {
   return (
     <motion.div
-      className="break-inside-avoid-column mb-6 p-6 rounded-[22px] border border-white/20 glassmorphism shadow-md flex flex-col justify-between text-left select-none relative overflow-hidden group"
+      className="p-5 rounded-[22px] border border-white/20 glassmorphism shadow-md flex flex-col justify-between text-left select-none relative overflow-hidden group aspect-square"
       animate={{
         y: [0, -10, 0]
       }}
@@ -775,9 +775,9 @@ export const GalleryCarousel: React.FC = () => {
         </button>
       </div>
 
-      {/* Masonry layout grid container */}
+      {/* Horizontal rows grid container */}
       <div className="relative z-10 w-full">
-        <div className="columns-2 md:columns-3 lg:columns-4 gap-6 [column-fill:_auto]">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {gridItems.map((item, index) => {
             if (item.type === 'photo') {
               const photoIndex = filteredPhotos.findIndex(p => p._id === item.data._id);
