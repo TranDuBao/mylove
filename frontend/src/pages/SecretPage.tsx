@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useThemeContext } from '../context/ThemeContext.js';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, Unlock, AlertCircle, Eye, EyeOff, Heart, Mail, ChevronDown, X } from 'lucide-react';
+import { Lock, Unlock, AlertCircle, Eye, EyeOff, Heart, Mail, ChevronDown, X, Sparkles } from 'lucide-react';
 import { api } from '../utils/api.js';
 import type { Photo, Letter } from '../types/index.js';
-import { PhotoProvider, PhotoView } from 'react-photo-view';
-import 'react-photo-view/dist/react-photo-view.css';
 import confetti from 'canvas-confetti';
 import { BirthdayCelebration } from '../components/BirthdayCelebration.js';
+import { CustomLightbox } from '../components/GalleryCarousel.js';
 
 // --- Typewriter Effect Component ---
 const TypewriterText: React.FC<{ text: string; speed?: number }> = ({ text, speed = 30 }) => {
@@ -167,6 +166,45 @@ export const SecretPage: React.FC = () => {
   const [showCode, setShowCode] = useState(false);
   const [secretPhotos, setSecretPhotos] = useState<Photo[]>([]);
   const [secretLetters, setSecretLetters] = useState<Letter[]>([]);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  
+  // Custom alerts configuration
+  const [alert, setAlert] = useState<{ msg: string; type: 'success' | 'error' | 'info' } | null>(null);
+  const showAlert = (msg: string, type: 'success' | 'error' | 'info' = 'success') => {
+    setAlert({ msg, type });
+    setTimeout(() => setAlert(null), 3000);
+  };
+
+  // Toggle Favorite
+  const handleFavoriteToggle = async (e: React.MouseEvent, photoId: string, currentFav: boolean) => {
+    e.stopPropagation();
+    try {
+      await api.updatePhoto(photoId, { isFavorite: !currentFav });
+      setSecretPhotos(prev => prev.map(p => p._id === photoId ? { ...p, isFavorite: !currentFav } : p));
+      
+      if (!currentFav) {
+        confetti({
+          particleCount: 50,
+          angle: 60,
+          spread: 55,
+          origin: { x: 0 },
+          colors: ['#FF7597', '#FF3366', '#FF99AA']
+        });
+        confetti({
+          particleCount: 50,
+          angle: 120,
+          spread: 55,
+          origin: { x: 1 },
+          colors: ['#FF7597', '#FF3366', '#FF99AA']
+        });
+        showAlert('Đã lưu bài viết vào mục yêu thích! 💖');
+      } else {
+        showAlert('Đã bỏ yêu thích. 💔', 'info');
+      }
+    } catch {
+      showAlert('Không thể cập nhật trạng thái yêu thích.', 'error');
+    }
+  };
 
   const fireConfetti = () => {
     const colors = ['#FF2E63', '#FF5C93', '#FF8FB1', '#FFFFFF', '#FFD6E7'];
@@ -425,40 +463,54 @@ export const SecretPage: React.FC = () => {
                   <div className="h-px w-12 bg-primary/20" />
                 </div>
 
-                <PhotoProvider>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full px-2 justify-items-center">
-                    {secretPhotos.map((photo, idx) => {
-                      const skews = ['-rotate-2', 'rotate-3', '-rotate-1', 'rotate-2', '-rotate-3', 'rotate-1'];
-                      const sk = skews[idx % skews.length];
-                      return (
-                        <PhotoView key={photo._id} src={getUrl(photo.url)}>
-                          <motion.div
-                            whileHover={{ scale: 1.05, rotate: 0, zIndex: 10 }}
-                            className={`bg-white p-3 pb-8 rounded-sm shadow-[0_8px_24px_rgba(255,92,147,0.12)] border border-rose-100 cursor-zoom-in relative ${sk} transition-transform duration-300 max-w-[260px] w-full`}
-                          >
-                            {/* Paper tape */}
-                            <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-5 bg-pink-100/70 border border-dashed border-primary/20 rounded-sm -rotate-3 shadow-sm" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full px-2 justify-items-center">
+                  {secretPhotos.map((photo, idx) => {
+                    const skews = ['-rotate-2', 'rotate-3', '-rotate-1', 'rotate-2', '-rotate-3', 'rotate-1'];
+                    const sk = skews[idx % skews.length];
+                    return (
+                      <motion.div
+                        key={photo._id}
+                        onClick={() => setLightboxIndex(idx)}
+                        whileHover={{ scale: 1.05, rotate: 0, zIndex: 10 }}
+                        className={`bg-white p-3 pb-8 rounded-sm shadow-[0_8px_24px_rgba(255,92,147,0.12)] border border-rose-100 cursor-zoom-in relative ${sk} transition-transform duration-300 max-w-[260px] w-full`}
+                      >
+                        {/* Paper tape */}
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-5 bg-pink-100/70 border border-dashed border-primary/20 rounded-sm -rotate-3 shadow-sm" />
 
-                            {/* Photo */}
-                            <div className="w-full aspect-[4/3] overflow-hidden bg-rose-50">
-                              <img
-                                src={getUrl(photo.url)}
-                                alt={photo.description}
-                                className="w-full h-full object-cover"
-                                loading="lazy"
-                              />
-                            </div>
+                        {/* Photo */}
+                        <div className="w-full aspect-[4/3] overflow-hidden bg-rose-50">
+                          <img
+                            src={getUrl(photo.url)}
+                            alt={photo.description}
+                            className="w-full h-full object-cover"
+                            loading="lazy"
+                          />
+                        </div>
 
-                            {/* Caption */}
-                            <p className="text-center text-[#5C3A47] font-handwriting text-base mt-3 px-1 truncate">
-                              {photo.description || '💕'}
-                            </p>
-                          </motion.div>
-                        </PhotoView>
-                      );
-                    })}
-                  </div>
-                </PhotoProvider>
+                        {/* Caption */}
+                        <p className="text-center text-[#5C3A47] font-handwriting text-base mt-3 px-1 truncate">
+                          {photo.description || '💕'}
+                        </p>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+
+                {/* custom immersive Lightbox Modal render */}
+                <AnimatePresence>
+                  {lightboxIndex !== null && (
+                    <CustomLightbox
+                      photos={secretPhotos}
+                      currentIndex={lightboxIndex}
+                      onClose={() => setLightboxIndex(null)}
+                      onPrev={() => setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : secretPhotos.length - 1))}
+                      onNext={() => setLightboxIndex(prev => (prev !== null && prev < secretPhotos.length - 1 ? prev + 1 : 0))}
+                      onFavoriteToggle={handleFavoriteToggle}
+                      getFullUrl={getUrl}
+                      showAlert={showAlert}
+                    />
+                  )}
+                </AnimatePresence>
               </section>
             )}
 
@@ -481,6 +533,27 @@ export const SecretPage: React.FC = () => {
           </motion.div>
         )}
 
+      </AnimatePresence>
+
+      {/* Notification banner */}
+      <AnimatePresence>
+        {alert && (
+          <motion.div 
+            initial={{ opacity: 0, y: 30, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.9 }}
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[110] px-6 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold tracking-wide flex items-center gap-2 select-none ${
+              alert.type === 'error' 
+                ? 'bg-red-500/90 text-white border-red-400' 
+                : alert.type === 'info'
+                ? 'bg-rose-100/90 text-rose-700 border-rose-200'
+                : 'bg-white/90 text-primary border-primary/20'
+            }`}
+          >
+            <Sparkles size={16} className="text-primary fill-primary animate-pulse" />
+            {alert.msg}
+          </motion.div>
+        )}
       </AnimatePresence>
     </div>
   );

@@ -460,7 +460,7 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
 };
 
 // --- CUSTOM IMMERSIVE LIGHTBOX COMPONENT ---
-interface LightboxProps {
+export interface LightboxProps {
   photos: Photo[];
   currentIndex: number;
   onClose: () => void;
@@ -471,7 +471,7 @@ interface LightboxProps {
   showAlert: (msg: string, type?: 'success'|'error') => void;
 }
 
-const CustomLightbox: React.FC<LightboxProps> = ({
+export const CustomLightbox: React.FC<LightboxProps> = ({
   photos, currentIndex, onClose, onPrev, onNext, onFavoriteToggle, getFullUrl, showAlert
 }) => {
   const photo = photos[currentIndex];
