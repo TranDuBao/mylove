@@ -394,21 +394,27 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
   );
 };
 
-// --- MEMORY TIMELINE CARD COMPONENT ---
-interface MilestoneCardProps {
+// --- MEMORY TIMELINE CARD COMPONENT -interface MilestoneCardProps {
   index: number;
   title: string;
   icon: string;
   date: string;
   desc: string;
+  photoUrl?: string;
 }
 
 const MilestoneCard: React.FC<MilestoneCardProps> = ({ 
-  index, title, icon, date, desc 
+  index, title, icon, date, desc, photoUrl 
 }) => {
+  const hasPhoto = !!photoUrl && photoUrl.trim() !== '';
+
   return (
     <motion.div
-      className="p-5 rounded-[22px] border border-white/20 glassmorphism shadow-md flex flex-col justify-between text-left select-none relative overflow-hidden group aspect-square"
+      className={`p-5 rounded-[22px] border shadow-md flex flex-col justify-between text-left select-none relative overflow-hidden group aspect-square ${
+        hasPhoto 
+          ? 'border-white/10 shadow-lg' 
+          : 'border-white/20 glassmorphism'
+      }`}
       animate={{
         y: [0, -10, 0]
       }}
@@ -420,39 +426,74 @@ const MilestoneCard: React.FC<MilestoneCardProps> = ({
       }}
       whileHover={{
         scale: 1.03,
-        boxShadow: '0 15px 30px rgba(249, 168, 212, 0.15)',
-        borderColor: 'rgba(249, 168, 212, 0.35)'
+        boxShadow: hasPhoto 
+          ? '0 15px 30px rgba(0, 0, 0, 0.3)' 
+          : '0 15px 30px rgba(249, 168, 212, 0.15)',
+        borderColor: hasPhoto 
+          ? 'rgba(255, 255, 255, 0.4)' 
+          : 'rgba(249, 168, 212, 0.35)'
       }}
     >
-      {/* Background Soft Glow Circular blobs */}
-      <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-      <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-accent/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+      {hasPhoto && (
+        <>
+          {/* Background Photo */}
+          <img 
+            src={photoUrl} 
+            alt={title}
+            className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+          />
+          {/* Dark overlay for contrast */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/10" />
+        </>
+      )}
 
-      <div>
+      {/* Background Soft Glow Circular blobs (only if no photo) */}
+      {!hasPhoto && (
+        <>
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+          <div className="absolute -bottom-10 -left-10 w-24 h-24 bg-accent/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+        </>
+      )}
+
+      <div className="relative z-10">
         {/* Icon Container */}
-        <div className="w-12 h-12 rounded-2xl bg-primary/20 border border-primary/20 flex items-center justify-center text-2xl shadow-inner mb-4 animate-[bounce_3s_infinite]">
+        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl shadow-inner mb-4 animate-[bounce_3s_infinite] ${
+          hasPhoto 
+            ? 'bg-white/20 border border-white/20' 
+            : 'bg-primary/20 border border-primary/20'
+        }`}>
           {icon}
         </div>
         
         {/* Title */}
-        <h4 className="text-text font-bold text-base tracking-wide flex items-center gap-1.5 mb-1">
+        <h4 className={`font-bold text-base tracking-wide flex items-center gap-1.5 mb-1 ${
+          hasPhoto ? 'text-white' : 'text-text'
+        }`}>
           {title}
         </h4>
         
         {/* Date */}
-        <span className="text-[10px] text-primary/75 font-mono font-semibold flex items-center gap-1 mb-3">
+        <span className={`text-[10px] font-mono font-semibold flex items-center gap-1 mb-3 ${
+          hasPhoto ? 'text-pink-300' : 'text-primary/75'
+        }`}>
           <Calendar size={10} />
           {date}
         </span>
 
         {/* Description */}
-        <p className="text-text/70 text-xs font-handwriting leading-relaxed">
+        <p className={`text-xs font-handwriting leading-relaxed ${
+          hasPhoto ? 'text-white/80' : 'text-text/70'
+        }`}>
           {desc}
         </p>
       </div>
 
       {/* Actionable swipe indicators */}
-      <div className="mt-5 pt-3 border-t border-primary/10 flex items-center justify-between text-[9px] uppercase tracking-wider font-bold text-primary/60">
+      <div className={`mt-5 pt-3 border-t flex items-center justify-between text-[9px] uppercase tracking-wider font-bold relative z-10 ${
+        hasPhoto 
+          ? 'border-white/10 text-white/50' 
+          : 'border-primary/10 text-primary/60'
+      }`}>
         <span>Story Milestone</span>
         <ArrowRight size={10} className="group-hover:translate-x-1 transition-transform" />
       </div>
@@ -932,6 +973,7 @@ export const GalleryCarousel: React.FC = () => {
                   icon={getMilestoneIcon(item.data.title)}
                   date={item.data.date}
                   desc={item.data.description}
+                  photoUrl={item.data.photoUrl ? getFullUrl(item.data.photoUrl) : undefined}
                 />
               );
             }
