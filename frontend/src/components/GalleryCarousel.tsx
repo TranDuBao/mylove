@@ -947,21 +947,23 @@ export const GalleryCarousel: React.FC = () => {
       </div>
 
       {/* custom immersive Lightbox Modal render */}
-      <AnimatePresence>
-        {lightboxIndex !== null && createPortal(
-          <CustomLightbox
-            photos={filteredPhotos}
-            currentIndex={lightboxIndex}
-            onClose={() => setLightboxIndex(null)}
-            onPrev={() => setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : filteredPhotos.length - 1))}
-            onNext={() => setLightboxIndex(prev => (prev !== null && prev < filteredPhotos.length - 1 ? prev + 1 : 0))}
-            onFavoriteToggle={handleFavoriteToggle}
-            getFullUrl={getFullUrl}
-            showAlert={showAlert}
-          />,
-          document.body
-        )}
-      </AnimatePresence>
+      {createPortal(
+        <AnimatePresence>
+          {lightboxIndex !== null && (
+            <CustomLightbox
+              photos={filteredPhotos}
+              currentIndex={lightboxIndex}
+              onClose={() => setLightboxIndex(null)}
+              onPrev={() => setLightboxIndex(prev => (prev !== null && prev > 0 ? prev - 1 : filteredPhotos.length - 1))}
+              onNext={() => setLightboxIndex(prev => (prev !== null && prev < filteredPhotos.length - 1 ? prev + 1 : 0))}
+              onFavoriteToggle={handleFavoriteToggle}
+              getFullUrl={getFullUrl}
+              showAlert={showAlert}
+            />
+          )}
+        </AnimatePresence>,
+        document.body
+      )}
 
       {/* Notification banner */}
       <AnimatePresence>
