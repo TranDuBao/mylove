@@ -533,7 +533,7 @@ export const CustomLightbox: React.FC<LightboxProps> = ({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-between p-4 md:p-6 backdrop-blur-2xl bg-black/85 select-none"
+      className="fixed inset-0 z-[9999] flex flex-col items-center justify-between p-4 md:p-6 backdrop-blur-2xl bg-black/85 select-none"
     >
       {/* 1. Header Toolbar */}
       <div className="w-full flex justify-between items-center z-55 max-w-7xl">
@@ -968,7 +968,7 @@ export const GalleryCarousel: React.FC = () => {
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.9 }}
-            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[110] px-6 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold tracking-wide flex items-center gap-2 select-none ${
+            className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[10000] px-6 py-3.5 rounded-2xl shadow-xl backdrop-blur-md border text-sm font-semibold tracking-wide flex items-center gap-2 select-none ${
               alert.type === 'error' 
                 ? 'bg-red-500/90 text-white border-red-400' 
                 : alert.type === 'info'
