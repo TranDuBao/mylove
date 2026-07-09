@@ -77,32 +77,34 @@ export const TimelineVisual: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-100px' }}
                 transition={{ type: 'spring', stiffness: 50, delay: 0.1 }}
-                className="w-full md:w-[45%] glassmorphism p-5 md:p-6 rounded-xl glow-border relative hover:shadow-[0_8px_32px_rgba(255,117,151,0.25)] transition-all duration-300"
+                className="w-full md:w-[45%] rounded-[22px] p-[1.5px] bg-gradient-to-br from-primary/30 via-secondary/20 to-accent/30 hover:from-primary/80 hover:via-secondary hover:to-accent/80 transition-all duration-300 hover:shadow-[0_12px_35px_rgba(255,117,151,0.2)]"
               >
-                {/* Event Photo */}
-                {event.photoUrl && (
-                  <div className="w-full h-48 md:h-56 rounded-lg overflow-hidden mb-4 shadow">
-                    <img 
-                      src={getFullUrl(event.photoUrl)} 
-                      alt={event.title} 
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
-                    />
+                <div className="w-full h-full bg-[#FFF4F8]/85 backdrop-blur-md p-5 md:p-6 rounded-[21px] text-left">
+                  {/* Event Photo */}
+                  {event.photoUrl && (
+                    <div className="w-full h-48 md:h-56 rounded-xl overflow-hidden mb-4 shadow-sm border border-white/40">
+                      <img 
+                        src={getFullUrl(event.photoUrl)} 
+                        alt={event.title} 
+                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-500" 
+                      />
+                    </div>
+                  )}
+
+                  {/* Event Metadata */}
+                  <div className="flex items-center gap-2 text-secondary text-xs mb-2">
+                    <Calendar size={12} />
+                    <span>{event.date}</span>
                   </div>
-                )}
 
-                {/* Event Metadata */}
-                <div className="flex items-center gap-2 text-secondary text-xs mb-2">
-                  <Calendar size={12} />
-                  <span>{event.date}</span>
+                  <h3 className="text-primary text-lg font-bold font-sans uppercase mb-2 tracking-wide">
+                    {event.title}
+                  </h3>
+
+                  <p className="text-text/80 text-sm font-light leading-relaxed border-t border-primary/10 pt-3 mt-3">
+                    {event.description}
+                  </p>
                 </div>
-
-                <h3 className="text-primary text-lg font-bold font-sans uppercase mb-2 tracking-wide text-glow">
-                  {event.title}
-                </h3>
-
-                <p className="text-text/90 text-sm font-light leading-relaxed border-t border-white/5 pt-3 mt-3">
-                  {event.description}
-                </p>
               </motion.div>
 
               {/* Spacer matching layout */}
