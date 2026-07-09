@@ -142,7 +142,7 @@ export const LetterContainer: React.FC = () => {
             <span className="text-[#8B7355] font-sans text-xs uppercase font-bold tracking-wider">
               {t('clickOpenEnv')}
             </span>
-            <span className="text-[#A58D6F] font-handwriting text-sm mt-1">{activeLetter.title}</span>
+            <span className="text-[#A58D6F] font-handwriting text-sm mt-1 whitespace-pre-wrap">{activeLetter.title}</span>
           </div>
         </motion.div>
       ) : (
@@ -178,7 +178,7 @@ export const LetterContainer: React.FC = () => {
 
             {/* Letter Content Header */}
             <div className="border-b border-black/10 pb-4 mb-6 flex justify-between items-end">
-              <h3 className="text-3xl font-bold font-handwriting capitalize">
+              <h3 className="text-3xl font-bold font-handwriting capitalize whitespace-pre-wrap">
                 {activeLetter.title}
               </h3>
               <span className="text-sm font-sans opacity-60">

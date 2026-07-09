@@ -1492,12 +1492,12 @@ export const AdminDashboard: React.FC = () => {
                 <div>
                   <label className="block text-xs text-text/85 font-bold uppercase mb-1.5">{t('cmsLetterTitle')}</label>
                   <div className="flex gap-1.5 flex-col">
-                    <input
-                      type="text"
+                    <textarea
                       value={letterTitle}
                       onChange={(e) => setLetterTitle(e.target.value)}
                       placeholder="To My Dearest"
-                      className="w-full px-3 py-2 rounded bg-white border border-primary/20 focus:border-primary text-text text-xs outline-none"
+                      rows={2}
+                      className="w-full px-3 py-2 rounded bg-white border border-primary/20 focus:border-primary text-text text-xs outline-none resize-y"
                     />
                     {/* Quick icon buttons */}
                     <div className="flex flex-wrap gap-1">
@@ -1643,8 +1643,8 @@ export const AdminDashboard: React.FC = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           <div>
                             <label className="block text-[10px] text-text/60 font-bold uppercase mb-1">Tiêu đề</label>
-                            <input type="text" value={editLetterTitle} onChange={e => setEditLetterTitle(e.target.value)}
-                              className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-primary/20 focus:border-primary text-text text-xs outline-none" />
+                            <textarea value={editLetterTitle} onChange={e => setEditLetterTitle(e.target.value)} rows={2}
+                              className="w-full px-2.5 py-1.5 rounded-lg bg-white border border-primary/20 focus:border-primary text-text text-xs outline-none resize-y" />
                           </div>
                           <div>
                             <label className="block text-[10px] text-text/60 font-bold uppercase mb-1">Font chữ</label>

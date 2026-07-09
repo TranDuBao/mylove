@@ -81,7 +81,7 @@ const SecretLetterCard: React.FC<{ letter: Letter }> = ({ letter }) => {
               <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                 <Mail size={20} className="text-primary animate-bounce" />
               </div>
-              <p className="text-[#C4687A] font-bold text-xs uppercase tracking-widest">{letter.title}</p>
+              <p className="text-[#C4687A] font-bold text-xs uppercase tracking-widest whitespace-pre-wrap text-center px-4">{letter.title}</p>
               <p className="text-[#D4889A] text-[10px]">Nhấn để mở • Click to open</p>
             </div>
 
@@ -133,7 +133,7 @@ const SecretLetterCard: React.FC<{ letter: Letter }> = ({ letter }) => {
               <div className="p-8 md:p-12 relative z-10">
                 {/* Letter header */}
                 <div className="border-b border-current/10 pb-5 mb-6 flex justify-between items-end">
-                  <h3 className="text-3xl md:text-4xl font-bold leading-tight">{letter.title}</h3>
+                  <h3 className="text-3xl md:text-4xl font-bold leading-tight whitespace-pre-wrap">{letter.title}</h3>
                   <span className="text-xs opacity-50" style={{ fontFamily: 'Nunito, sans-serif' }}>
                     {letter.createdAt ? new Date(letter.createdAt).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }) : ''}
                   </span>
