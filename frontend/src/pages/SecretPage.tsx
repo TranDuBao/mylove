@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useThemeContext } from '../context/ThemeContext.js';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, Unlock, AlertCircle, Eye, EyeOff, Heart, Mail, ChevronDown, X, Sparkles } from 'lucide-react';
@@ -498,7 +499,7 @@ export const SecretPage: React.FC = () => {
 
                 {/* custom immersive Lightbox Modal render */}
                 <AnimatePresence>
-                  {lightboxIndex !== null && (
+                  {lightboxIndex !== null && createPortal(
                     <CustomLightbox
                       photos={secretPhotos}
                       currentIndex={lightboxIndex}
@@ -508,7 +509,8 @@ export const SecretPage: React.FC = () => {
                       onFavoriteToggle={handleFavoriteToggle}
                       getFullUrl={getUrl}
                       showAlert={showAlert}
-                    />
+                    />,
+                    document.body
                   )}
                 </AnimatePresence>
               </section>

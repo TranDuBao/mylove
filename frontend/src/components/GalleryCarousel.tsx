@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef, useMemo } from 'react';
+import { createPortal } from 'react-dom';
 import { PhotoProvider } from 'react-photo-view';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { api } from '../utils/api.js';
@@ -947,7 +948,7 @@ export const GalleryCarousel: React.FC = () => {
 
       {/* custom immersive Lightbox Modal render */}
       <AnimatePresence>
-        {lightboxIndex !== null && (
+        {lightboxIndex !== null && createPortal(
           <CustomLightbox
             photos={filteredPhotos}
             currentIndex={lightboxIndex}
@@ -957,7 +958,8 @@ export const GalleryCarousel: React.FC = () => {
             onFavoriteToggle={handleFavoriteToggle}
             getFullUrl={getFullUrl}
             showAlert={showAlert}
-          />
+          />,
+          document.body
         )}
       </AnimatePresence>
 
