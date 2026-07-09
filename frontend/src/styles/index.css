@@ -75,14 +75,14 @@
 
   .glow-border {
     position: relative;
-    border-radius: var(--border-radius);
+    border: none !important;
   }
 
   .glow-border::after {
     content: '';
     position: absolute;
     inset: -1px;
-    border-radius: calc(var(--border-radius) + 1px);
+    border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
     -webkit-mask: 
