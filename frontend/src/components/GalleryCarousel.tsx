@@ -965,6 +965,10 @@ export const GalleryCarousel: React.FC = () => {
                 />
               );
             } else {
+              console.log("Milestone Card debug:", item.data.title, {
+                rawPhotoUrl: item.data.photoUrl,
+                resolvedPhotoUrl: item.data.photoUrl ? getFullUrl(item.data.photoUrl) : undefined
+              });
               return (
                 <MilestoneCard
                   key={`milestone-${index}`}

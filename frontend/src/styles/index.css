@@ -32,19 +32,23 @@
   ::-webkit-scrollbar {
     width: 8px;
   }
+
   ::-webkit-scrollbar-track {
     background: rgba(255, 234, 243, 0.5);
   }
+
   ::-webkit-scrollbar-thumb {
     background: var(--primary-color);
     border-radius: 4px;
   }
+
   ::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
   }
 }
 
 @layer components {
+
   /* Pastel Light Glass Cards */
   .glassmorphism {
     background: rgba(255, 255, 255, 0.65);
@@ -81,15 +85,15 @@
   .glow-border::after {
     content: '';
     position: absolute;
-    inset: -1px;
+    inset: 0;
     border-radius: inherit;
     padding: 1px;
     background: linear-gradient(135deg, var(--primary-color), var(--secondary-color), var(--accent-color));
-    -webkit-mask: 
-       linear-gradient(#fff 0 0) content-box, 
-       linear-gradient(#fff 0 0);
+    -webkit-mask:
+      linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
     -webkit-mask-composite: xor;
-            mask-composite: exclude;
+    mask-composite: exclude;
     pointer-events: none;
     opacity: 0.3;
     transition: opacity 0.3s;
@@ -106,7 +110,7 @@
   .text-glow-gold {
     text-shadow: 0 0 10px rgba(255, 143, 177, 0.2);
   }
-  
+
   .font-handwriting {
     font-family: var(--handwriting-font), cursive;
   }
@@ -134,7 +138,8 @@
   background: #FFF4F8 !important;
 }
 
-.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
   background: rgba(255, 255, 255, 0.9) !important;
   backdrop-filter: blur(10px);
   color: var(--text-color) !important;
@@ -175,6 +180,7 @@
     transform: translate(-50%, -50%) scale(1) rotate(0deg);
     opacity: 1;
   }
+
   100% {
     transform: translate(-50%, -150%) scale(0.2) rotate(20deg);
     opacity: 0;
@@ -183,11 +189,27 @@
 
 /* Heart beat animation for Secret Page */
 @keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  14% { transform: scale(1.18); }
-  28% { transform: scale(1); }
-  42% { transform: scale(1.12); }
-  70% { transform: scale(1); }
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  14% {
+    transform: scale(1.18);
+  }
+
+  28% {
+    transform: scale(1);
+  }
+
+  42% {
+    transform: scale(1.12);
+  }
+
+  70% {
+    transform: scale(1);
+  }
 }
 
 .animate-beat {
@@ -196,9 +218,23 @@
 
 /* Shake animation for wrong passcode */
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  15%, 45%, 75% { transform: translateX(-8px); }
-  30%, 60%, 90% { transform: translateX(8px); }
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  15%,
+  45%,
+  75% {
+    transform: translateX(-8px);
+  }
+
+  30%,
+  60%,
+  90% {
+    transform: translateX(8px);
+  }
 }
 
 .animate-shake {
@@ -207,6 +243,13 @@
 
 /* Float animation for candles */
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-5px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
 }

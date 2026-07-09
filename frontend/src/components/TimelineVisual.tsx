@@ -20,7 +20,10 @@ export const TimelineVisual: React.FC = () => {
   }, []);
 
   const getFullUrl = (url: string) => {
-    return url.startsWith('/') ? `http://localhost:5000${url}` : url;
+    if (!url) return '';
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    const baseUrl = (import.meta.env.VITE_API_URL as string)?.replace('/api', '') || 'http://localhost:5000';
+    return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
   };
 
   if (events.length === 0) {
