@@ -75,16 +75,6 @@ export const InteractiveMap: React.FC = () => {
   const sovereigntyAndCityMarkers = useMemo(() => [
     // Sovereignty Labels
     {
-      position: [16.5, 112.0] as [number, number],
-      label: 'Quần đảo Hoàng Sa\n(Việt Nam)',
-      type: 'sovereignty'
-    },
-    {
-      position: [8.87, 112.5] as [number, number],
-      label: 'Quần đảo Trường Sa\n(Việt Nam)',
-      type: 'sovereignty'
-    },
-    {
       position: [13.0, 114.0] as [number, number],
       label: 'Biển Đông\n(Việt Nam)',
       type: 'sea'
