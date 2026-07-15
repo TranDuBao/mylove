@@ -340,5 +340,55 @@ export const api = {
       headers: getHeaders(),
     });
     return handleResponse(res);
-  }
+  },
+
+  // --- SCRATCH CARDS (CRUD) ---
+  async getScratchCards(): Promise<any[]> {
+    const res = await fetch(`${API_URL}/scratchcards`);
+    return handleResponse(res);
+  },
+
+  async createScratchCard(card: any): Promise<any> {
+    const res = await fetch(`${API_URL}/scratchcards`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(card),
+    });
+    return handleResponse(res);
+  },
+
+  async updateScratchCard(id: string, card: any): Promise<any> {
+    const res = await fetch(`${API_URL}/scratchcards/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(card),
+    });
+    return handleResponse(res);
+  },
+
+  async deleteScratchCard(id: string): Promise<any> {
+    const res = await fetch(`${API_URL}/scratchcards/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  async seedScratchCards(cards: any[]): Promise<any> {
+    const res = await fetch(`${API_URL}/scratchcards/seed`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ cards }),
+    });
+    return handleResponse(res);
+  },
+
+  async reorderScratchCards(sortedIds: string[]): Promise<any> {
+    const res = await fetch(`${API_URL}/scratchcards/reorder`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify({ sortedIds }),
+    });
+    return handleResponse(res);
+  },
 };

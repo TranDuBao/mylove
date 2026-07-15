@@ -11,6 +11,7 @@ import { LetterContainer } from '../components/LetterContainer.js';
 import { InteractiveMap } from '../components/InteractiveMap.js';
 import { GiftBox3D } from '../components/GiftBox3D.js';
 import { Cake3D } from '../components/Cake3D.js';
+import { ScratchCardSection } from '../components/scratchcard/ScratchCardSection.js';
 import { Heart, ChevronDown } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -213,6 +214,11 @@ export const Home: React.FC = () => {
           {/* Surprise Box opening */}
           <section className="relative z-10 bg-black/10">
             <GiftBox3D />
+          </section>
+
+          {/* Scratch Card Reveals */}
+          <section className="relative z-10">
+            <ScratchCardSection />
           </section>
 
           {/* Memory Timeline milestones */}

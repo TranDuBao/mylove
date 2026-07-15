@@ -253,3 +253,657 @@
     transform: translateY(-5px);
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SCRATCH CARD REVEAL SYSTEM
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ─── Section Layout ────────────────────────────────────────────────── */
+.sc-section {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+  position: relative;
+}
+
+.sc-section-inner {
+  max-width: 1100px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.sc-section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.sc-section-title {
+  font-family: 'Nunito', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(255, 92, 147, 0.15);
+}
+
+.sc-section-title-icon {
+  margin-right: 8px;
+  font-size: 1.6rem;
+}
+
+.sc-section-subtitle {
+  font-family: var(--handwriting-font), cursive;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  text-shadow: 0 0 8px rgba(255, 143, 177, 0.15);
+}
+
+/* ─── Card Grid ─────────────────────────────────────────────────────── */
+.sc-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 40px;
+  justify-items: center;
+}
+
+@media (min-width: 768px) {
+  .sc-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sc-card-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.sc-card-grid-item {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sc-card-grid-item.sc-grid-col-medium {
+    grid-column: span 2;
+  }
+  .sc-card-grid-item.sc-grid-col-wide {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sc-card-grid-item.sc-grid-col-medium {
+    grid-column: span 2;
+  }
+  .sc-card-grid-item.sc-grid-col-wide {
+    grid-column: span 3;
+  }
+}
+
+/* ─── Card Wrapper ──────────────────────────────────────────────────── */
+.sc-card-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  max-width: 340px;
+  width: 100%;
+}
+
+.sc-card-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.sc-card-emoji {
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.sc-card-name {
+  font-family: 'Nunito', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ─── Card Frame (Scrapbook Style) ──────────────────────────────────── */
+.sc-card-frame {
+  background: rgba(255, 255, 255, 0.65);
+  border: 8px solid #ffffff;
+  box-shadow:
+    0 8px 32px rgba(255, 92, 147, 0.12),
+    0 2px 8px rgba(0, 0, 0, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  /* Paper texture effect */
+  background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E");
+}
+
+.sc-card-frame:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 40px rgba(255, 92, 147, 0.18),
+    0 4px 12px rgba(0, 0, 0, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+}
+
+.sc-card-frame.sc-card-revealed {
+  box-shadow:
+    0 12px 40px rgba(255, 92, 147, 0.2),
+    0 0 60px rgba(255, 92, 147, 0.08);
+}
+
+/* ─── Washi Tape Decorations ────────────────────────────────────────── */
+.sc-tape {
+  position: absolute;
+  width: 48px;
+  height: 18px;
+  background: linear-gradient(90deg, rgba(255, 182, 193, 0.5) 0%, rgba(255, 218, 233, 0.6) 50%, rgba(255, 182, 193, 0.5) 100%);
+  z-index: 20;
+  pointer-events: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  opacity: 0.7;
+}
+
+.sc-tape-tl {
+  top: -5px;
+  left: 12px;
+  transform: rotate(-12deg);
+}
+
+.sc-tape-tr {
+  top: -5px;
+  right: 12px;
+  transform: rotate(8deg);
+}
+
+/* ─── Canvas Styles ─────────────────────────────────────────────────── */
+.sc-canvas {
+  cursor: grab;
+  transition: opacity 0.5s ease;
+}
+
+.sc-canvas:active {
+  cursor: grabbing;
+}
+
+.sc-canvas--revealed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ─── Hint Overlay ──────────────────────────────────────────────────── */
+.sc-hint-overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.sc-hint-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(8px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 16px rgba(255, 92, 147, 0.1);
+}
+
+.sc-hint-icon {
+  font-size: 24px;
+  animation: sc-hint-bounce 1.5s ease-in-out infinite;
+}
+
+.sc-hint-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-color);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+@keyframes sc-hint-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+/* ─── Progress Bar ──────────────────────────────────────────────────── */
+.sc-progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 200px;
+}
+
+.sc-progress-track {
+  flex: 1;
+  height: 4px;
+  background: rgba(255, 92, 147, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.sc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 92, 147, 0.3);
+}
+
+.sc-progress-text {
+  font-family: 'Nunito', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--primary-color);
+  min-width: 30px;
+  text-align: right;
+}
+
+/* ─── Milestone Effects ─────────────────────────────────────────────── */
+
+/* Sparkle particles */
+.sc-sparkle-particle {
+  position: absolute;
+  font-size: 16px;
+  pointer-events: none;
+  z-index: 15;
+  animation: sc-sparkle-pop 1.2s ease-out forwards;
+}
+
+@keyframes sc-sparkle-pop {
+  0% { opacity: 0; transform: scale(0) rotate(0deg); }
+  30% { opacity: 1; transform: scale(1.3) rotate(90deg); }
+  100% { opacity: 0; transform: scale(0.3) rotate(180deg) translateY(-20px); }
+}
+
+/* Floating heart particles */
+.sc-heart-particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  animation: sc-heart-float 2.2s ease-out forwards;
+}
+
+@keyframes sc-heart-float {
+  0% { opacity: 0; transform: translateY(0) scale(0.5) rotate(0deg); }
+  20% { opacity: 1; transform: translateY(-20px) scale(1) rotate(10deg); }
+  100% { opacity: 0; transform: translateY(-120px) scale(0.6) rotate(-15deg); }
+}
+
+/* Confetti particles */
+.sc-confetti-particle {
+  position: absolute;
+  pointer-events: none;
+  z-index: 15;
+  animation: sc-confetti-fall 1.8s ease-in forwards;
+}
+
+@keyframes sc-confetti-fall {
+  0% { opacity: 1; transform: translateY(0) rotate(0deg) scale(1); }
+  100% {
+    opacity: 0;
+    transform: translateY(200px) rotate(720deg) scale(0.5)
+      translateX(calc((var(--random, 0.5) - 0.5) * 100px));
+  }
+}
+
+/* Glow effect on card */
+.sc-glow-active {
+  box-shadow:
+    0 0 30px rgba(255, 92, 147, 0.25),
+    0 0 60px rgba(255, 92, 147, 0.15),
+    0 8px 32px rgba(255, 92, 147, 0.12) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+/* ─── Camera Shake ──────────────────────────────────────────────────── */
+.sc-camera-shake {
+  animation: sc-shake 0.5s ease-in-out;
+}
+
+@keyframes sc-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-3px, -2px) rotate(-0.5deg); }
+  20% { transform: translate(3px, 1px) rotate(0.5deg); }
+  30% { transform: translate(-2px, 3px) rotate(-0.3deg); }
+  40% { transform: translate(2px, -2px) rotate(0.3deg); }
+  50% { transform: translate(-1px, 2px) rotate(-0.2deg); }
+  60% { transform: translate(1px, -1px) rotate(0.2deg); }
+  70% { transform: translate(-2px, 1px) rotate(-0.1deg); }
+  80% { transform: translate(1px, -1px) rotate(0.1deg); }
+  90% { transform: translate(-1px, 0) rotate(0deg); }
+}
+
+/* ─── Hidden Content Styles ─────────────────────────────────────────── */
+.sc-hidden-text {
+  word-break: break-word;
+  animation: sc-text-reveal 0.6s ease-out;
+}
+
+@keyframes sc-text-reveal {
+  0% { opacity: 0; filter: blur(4px); }
+  100% { opacity: 1; filter: blur(0); }
+}
+
+.sc-hidden-button:hover {
+  transform: scale(1.05);
+  filter: brightness(1.1);
+}
+
+.sc-hidden-button:active {
+  transform: scale(0.98);
+}
+
+/* ─── Responsive Tweaks ─────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .sc-section {
+    padding: 50px 16px;
+  }
+
+  .sc-section-title {
+    font-size: 1.5rem;
+  }
+
+  .sc-section-subtitle {
+    font-size: 1rem;
+  }
+
+  .sc-card-grid {
+    gap: 30px;
+  }
+
+  .sc-card-wrapper {
+    max-width: 300px;
+  }
+
+  .sc-tape {
+    width: 36px;
+    height: 14px;
+  }
+}
+
+/* ─── Admin Shared Input Style ──────────────────────────────────────── */
+.sc-admin-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 92, 147, 0.15);
+  background: white;
+  color: var(--text-color);
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.sc-admin-input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(255, 92, 147, 0.08);
+}
+
+.sc-admin-input::placeholder {
+  color: rgba(92, 58, 71, 0.3);
+}
+
+/* ─── Scrapbook Textures ────────────────────────────────────────── */
+.paper-texture-handmade {
+  background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.04' numOctaves='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)'/%3E%3C/svg%3E") !important;
+}
+
+.paper-texture-watercolor {
+  background-image: url("data:image/svg+xml,%3Csvg width='150' height='150' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.03' numOctaves='4'/%3E%3CfeDiffuseLighting in='noise' lighting-color='%23fff' surfaceScale='2'%3E%3CfeDistantLight azimuth='45' elevation='60'/%3E%3C/feDiffuseLighting%3E%3CfeBlend mode='multiply' in='SourceGraphic' in2='noise'/%3E%3C/filter%3E%3Crect width='150' height='150' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E") !important;
+}
+
+.paper-texture-kraft {
+  background-color: #cbb493 !important;
+  background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.08' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E") !important;
+}
+
+.paper-texture-vintage {
+  background-color: #f1e7d0 !important;
+  background-image: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.15) 100%), url("data:image/svg+xml,%3Csvg width='100' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.05' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23noise)' opacity='0.06'/%3E%3C/svg%3E") !important;
+}
+
+.paper-texture-notebook {
+  background-color: #fcfcf9 !important;
+  background-image: 
+    linear-gradient(90deg, transparent 39px, #ab47bc 40px, #ab47bc 41px, transparent 42px),
+    linear-gradient(#e1f5fe 0.9em, transparent 0.95em) !important;
+  background-size: 100% 1.4em !important;
+}
+
+.paper-texture-glitter {
+  background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.8) 1px, transparent 1px),
+                    radial-gradient(circle at 80% 40%, rgba(255,255,255,0.8) 1px, transparent 1px),
+                    radial-gradient(circle at 40% 70%, rgba(255,255,255,0.8) 1px, transparent 1px),
+                    radial-gradient(circle at 90% 90%, rgba(255,255,255,0.8) 1.5px, transparent 1.5px),
+                    linear-gradient(135deg, rgba(255,192,203,0.3) 0%, rgba(255,255,255,0.3) 100%) !important;
+  background-size: 50px 50px, 60px 60px, 45px 45px, 70px 70px, 100% 100% !important;
+}
+
+.paper-texture-metallic {
+  background: linear-gradient(135deg, #cfd8dc 0%, #ffffff 25%, #b0bec5 50%, #ffffff 75%, #cfd8dc 100%) !important;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1) !important;
+}
+
+.paper-texture-fabric {
+  background-image: 
+    linear-gradient(rgba(244,143,177,0.15) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(244,143,177,0.15) 1px, transparent 1px) !important;
+  background-size: 8px 8px !important;
+}
+
+.paper-texture-linen {
+  background-image: 
+    linear-gradient(rgba(215,204,200,0.2) 2px, transparent 2px),
+    linear-gradient(90deg, rgba(215,204,200,0.2) 2px, transparent 2px) !important;
+  background-size: 5px 5px !important;
+}
+
+.paper-texture-frosted {
+  background: rgba(255, 255, 255, 0.25) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+.paper-texture-acrylic {
+  background: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: inset 0 0 15px rgba(255,255,255,0.2) !important;
+  border-color: rgba(255,255,255,0.4) !important;
+}
+
+.paper-texture-pastel {
+  background-color: #fff9fc !important;
+  background-image: radial-gradient(#ffd5e5 15%, transparent 16%),
+                    radial-gradient(#ffd5e5 15%, transparent 16%) !important;
+  background-size: 20px 20px !important;
+  background-position: 0 0, 10px 10px !important;
+}
+
+/* ─── Sticker Animations ────────────────────────────────────────── */
+.anim-sticker-floating {
+  animation: sticker-floating 4s ease-in-out infinite;
+}
+
+.anim-sticker-bounce {
+  animation: sticker-bounce 2s ease-in-out infinite;
+}
+
+.anim-sticker-swing {
+  animation: sticker-swing 3s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.anim-sticker-rotate {
+  animation: sticker-rotate 10s linear infinite;
+}
+
+.anim-sticker-heartbeat {
+  animation: sticker-heartbeat 1.5s ease-in-out infinite;
+}
+
+.anim-sticker-breathing {
+  animation: sticker-breathing 4s ease-in-out infinite;
+}
+
+.anim-sticker-sparkle {
+  animation: sticker-sparkle 1.8s ease-in-out infinite;
+}
+
+.anim-sticker-shaking {
+  animation: sticker-shaking 0.5s ease-in-out infinite;
+}
+
+.anim-sticker-pulse {
+  animation: sticker-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sticker-floating {
+  0%, 100% { transform: translateY(0) translate(-50%, -50%); }
+  50% { transform: translateY(-8px) translate(-50%, -50%); }
+}
+
+@keyframes sticker-bounce {
+  0%, 100% { transform: translateY(0) scaleY(1) translate(-50%, -50%); }
+  40% { transform: translateY(-12px) scaleY(0.9) translate(-50%, -50%); }
+  70% { transform: translateY(0px) scaleY(1.05) translate(-50%, -50%); }
+}
+
+@keyframes sticker-swing {
+  0%, 100% { transform: rotate(-5deg) translate(-50%, -50%); }
+  50% { transform: rotate(5deg) translate(-50%, -50%); }
+}
+
+@keyframes sticker-rotate {
+  0% { transform: rotate(0deg) translate(-50%, -50%); }
+  100% { transform: rotate(360deg) translate(-50%, -50%); }
+}
+
+@keyframes sticker-heartbeat {
+  0%, 100%, 70% { transform: scale(1) translate(-50%, -50%); }
+  15% { transform: scale(1.15) translate(-50%, -50%); }
+  30% { transform: scale(1.05) translate(-50%, -50%); }
+  45% { transform: scale(1.18) translate(-50%, -50%); }
+}
+
+@keyframes sticker-breathing {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@keyframes sticker-sparkle {
+  0%, 100% { filter: brightness(1) scale(1); opacity: 0.9; }
+  50% { filter: brightness(1.5) scale(1.08); opacity: 1; }
+}
+
+@keyframes sticker-shaking {
+  0%, 100% { transform: rotate(0deg) translate(-50%, -50%); }
+  25% { transform: rotate(-2deg) translate(-50%, -50%); }
+  75% { transform: rotate(2deg) translate(-50%, -50%); }
+}
+
+@keyframes sticker-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 92, 147, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 92, 147, 0); }
+}
+
+/* Leaflet Map Sovereignty Label Styles */
+.leaflet-tooltip.map-sovereignty-label {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 92, 147, 0.5) !important;
+  border-radius: 8px !important;
+  color: #c0396b !important;
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 11px !important;
+  text-align: center !important;
+  box-shadow: 0 4px 15px rgba(255, 92, 147, 0.2) !important;
+  white-space: nowrap !important;
+  padding: 4px 8px !important;
+  pointer-events: none !important;
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip.map-sovereignty-label::before {
+  border: none !important; /* Hide tooltip arrows */
+}
+
+.leaflet-tooltip.map-sea-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #0b5f8a !important; /* Elegant ocean blue label */
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 14px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.7) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip.map-sea-label::before {
+  border: none !important;
+}
+
+.leaflet-tooltip.map-country-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #4a3e3d !important; /* Elegant country name color */
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 16px !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.15em !important;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.9), 0 0 10px rgba(255, 255, 255, 0.7) !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip.map-country-label::before {
+  border: none !important;
+}
+
+.leaflet-tooltip.map-city-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #555555 !important; /* Clean gray color for city labels */
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  text-shadow: 0 0 3px rgba(255, 255, 255, 0.9), 0 0 8px rgba(255, 255, 255, 0.7) !important;
+  white-space: nowrap !important;
+  pointer-events: none !important;
+  padding: 0 !important;
+}
+
+.leaflet-tooltip-pane .leaflet-tooltip.map-city-label::before {
+  border: none !important;
+}

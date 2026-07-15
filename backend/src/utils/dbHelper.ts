@@ -10,6 +10,7 @@ import { Letter } from '../models/Letter.js';
 import { Music } from '../models/Music.js';
 import { Video } from '../models/Video.js';
 import { MapMarker } from '../models/MapMarker.js';
+import { ScratchCardModel } from '../models/ScratchCard.js';
 import { jsonDb } from './jsonDb.js';
 
 // Type helper for collections
@@ -20,6 +21,7 @@ const modelMapping: { [key: string]: any } = {
   music: Music,
   videos: Video,
   markers: MapMarker,
+  scratchcards: ScratchCardModel,
 };
 
 export const dbHelper = {

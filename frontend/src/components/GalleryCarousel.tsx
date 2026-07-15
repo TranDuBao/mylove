@@ -394,7 +394,8 @@ const PhotoCard: React.FC<PhotoCardProps> = ({
   );
 };
 
-// --- MEMORY TIMELINE CARD COMPONENT -interface MilestoneCardProps {
+// --- MEMORY TIMELINE CARD COMPONENT ---
+interface MilestoneCardProps {
   index: number;
   title: string;
   icon: string;

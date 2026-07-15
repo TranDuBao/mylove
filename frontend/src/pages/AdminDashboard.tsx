@@ -4,8 +4,9 @@ import { api } from '../utils/api.js';
 import type { Photo, TimelineEvent, Letter, Song, Video, MapMarker, AdminStats } from '../types/index.js';
 import { 
   LayoutDashboard, Image as ImageIcon, Calendar, BookOpen, Music, MapPin, 
-  Paintbrush, Settings as SettingsIcon, LogOut, Loader2, ArrowUp, ArrowDown, Plus, Trash2, Edit3, Heart, Save, Eye, Info, Lock, RefreshCw
+  Paintbrush, Settings as SettingsIcon, LogOut, Loader2, ArrowUp, ArrowDown, Plus, Trash2, Edit3, Heart, Save, Eye, Info, Lock, RefreshCw, Sparkles
 } from 'lucide-react';
+import { ScratchCardAdmin } from '../components/scratchcard/ScratchCardAdmin.js';
 
 // ── QR Code Generator Tab ──
 const QrCodeTab: React.FC<{ showAlert: (msg: string, type?: 'success'|'error'|'info') => void }> = ({ showAlert }) => {
@@ -200,7 +201,7 @@ export const AdminDashboard: React.FC = () => {
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // CMS Tabs State
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'photos' | 'timeline' | 'letters' | 'archive' | 'music' | 'videos' | 'map' | 'theme' | 'settings' | 'qr'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'photos' | 'timeline' | 'letters' | 'archive' | 'music' | 'videos' | 'map' | 'theme' | 'settings' | 'qr' | 'scratch'>('dashboard');
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [isLoadingStats, setIsLoadingStats] = useState(false);
 
@@ -1066,6 +1067,7 @@ export const AdminDashboard: React.FC = () => {
             { id: 'qr', label: 'Mã QR 📱', icon: <span className="text-base leading-none">📱</span> },
             { id: 'theme', label: t('cmsTheme'), icon: <Paintbrush size={16} /> },
             { id: 'settings', label: t('cmsSettings'), icon: <SettingsIcon size={16} /> },
+            { id: 'scratch', label: t('cmsScratchCards'), icon: <Sparkles size={16} /> },
           ].map(tab => (
             <button
               key={tab.id}
@@ -2564,6 +2566,9 @@ export const AdminDashboard: React.FC = () => {
 
         {/* QR CODE GENERATOR */}
         {activeTab === 'qr' && <QrCodeTab showAlert={showAlert} />}
+
+        {/* SCRATCH CARD MANAGER */}
+        {activeTab === 'scratch' && <ScratchCardAdmin />}
       </div>
 
       {/* Reusable Custom Dialog Modal */}

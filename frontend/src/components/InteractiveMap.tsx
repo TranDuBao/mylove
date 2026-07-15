@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useState, useMemo } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Tooltip } from 'react-leaflet';
 import L from 'leaflet';
 import { api } from '../utils/api.js';
 import type { MapMarker } from '../types/index.js';
@@ -26,7 +26,7 @@ const createHeartIcon = (color: string) => {
 export const InteractiveMap: React.FC = () => {
   const { theme } = useThemeContext();
   const [markers, setMarkers] = useState<MapMarker[]>([]);
-  const [center, setCenter] = useState<[number, number]>([21.0285, 105.8542]); // Default center (Hanoi or similar)
+  const [center, setCenter] = useState<[number, number]>([16.0, 108.0]); // Centered on Vietnam region
   const [hasLoaded, setHasLoaded] = useState(false);
 
   useEffect(() => {
@@ -51,6 +51,67 @@ export const InteractiveMap: React.FC = () => {
   }, []);
 
   const heartIcon = useMemo(() => createHeartIcon(theme?.primaryColor || '#FF7597'), [theme]);
+
+  // Sovereignty labels with invisible icons to act as native map text
+  const invisibleIcon = useMemo(() => L.divIcon({
+    className: 'bg-transparent border-none',
+    html: '<div style="width: 0; height: 0;"></div>',
+    iconSize: [0, 0],
+    iconAnchor: [0, 0]
+  }), []);
+
+  // Tiny dot icon representing cities on the map
+  const cityDotIcon = useMemo(() => L.divIcon({
+    className: 'custom-map-city-dot bg-transparent border-none',
+    html: `
+      <div class="flex items-center justify-center animate-pulse" style="width: 8px; height: 8px;">
+        <div style="width: 6px; height: 6px; background-color: #7f8c8d; border: 1.5px solid #ffffff; border-radius: 50%; box-shadow: 0 1px 3px rgba(0,0,0,0.45);"></div>
+      </div>
+    `,
+    iconSize: [8, 8],
+    iconAnchor: [4, 4]
+  }), []);
+
+  const sovereigntyAndCityMarkers = useMemo(() => [
+    // Sovereignty Labels
+    {
+      position: [16.5, 112.0] as [number, number],
+      label: 'Quần đảo Hoàng Sa\n(Việt Nam)',
+      type: 'sovereignty'
+    },
+    {
+      position: [8.87, 112.5] as [number, number],
+      label: 'Quần đảo Trường Sa\n(Việt Nam)',
+      type: 'sovereignty'
+    },
+    {
+      position: [13.0, 114.0] as [number, number],
+      label: 'Biển Đông\n(Việt Nam)',
+      type: 'sea'
+    },
+    // Country Label
+    {
+      position: [15.8, 107.5] as [number, number],
+      label: 'VIỆT NAM',
+      type: 'country'
+    },
+    // City / Province Labels
+    {
+      position: [21.0285, 105.8542] as [number, number],
+      label: 'Hà Nội',
+      type: 'city'
+    },
+    {
+      position: [10.8231, 106.6297] as [number, number],
+      label: 'TP. Hồ Chí Minh',
+      type: 'city'
+    },
+    {
+      position: [13.0882, 109.3025] as [number, number],
+      label: 'Phú Yên',
+      type: 'city'
+    }
+  ], []);
 
   const getFullUrl = (url: string) => {
     if (!url) return '';
@@ -77,11 +138,50 @@ export const InteractiveMap: React.FC = () => {
             scrollWheelZoom={false}
             className="w-full h-full"
           >
-            {/* Bright, premium voyager themed map tiles matching the sweet theme */}
+             {/* Bright, premium voyager themed map tiles without disputed labels */}
             <TileLayer
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+              url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png"
             />
+
+            {/* Custom Map Labels & Cities */}
+            {sovereigntyAndCityMarkers.map((m, idx) => {
+              let icon = invisibleIcon;
+              let className = "";
+              let direction: "center" | "right" | "top" = "center";
+              let offset: [number, number] = [0, 0];
+
+              if (m.type === 'sovereignty') {
+                className = "map-sovereignty-label";
+              } else if (m.type === 'sea') {
+                className = "map-sea-label";
+              } else if (m.type === 'country') {
+                className = "map-country-label";
+              } else if (m.type === 'city') {
+                icon = cityDotIcon;
+                className = "map-city-label";
+                direction = "right";
+                offset = [6, 0];
+              }
+
+              return (
+                <Marker key={`label-${idx}`} position={m.position} icon={icon}>
+                  <Tooltip 
+                    permanent 
+                    direction={direction} 
+                    offset={offset}
+                    className={className}
+                  >
+                    {m.label.split('\n').map((line, i) => (
+                      <React.Fragment key={i}>
+                        {i > 0 && <br />}
+                        {line}
+                      </React.Fragment>
+                    ))}
+                  </Tooltip>
+                </Marker>
+              );
+            })}
 
             {markers.map((marker) => (
               <Marker 
@@ -122,8 +222,5 @@ export const InteractiveMap: React.FC = () => {
     </div>
   );
 };
-
-// Memoization helper
-import { useMemo } from 'react';
 
 export default InteractiveMap;
